@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/screen/home.dart';
 import 'package:flutter_sogreat_application/screen/signup.dart';
@@ -201,6 +202,7 @@ class _SignInState extends State<SignIn> {
 
       for (var map in result) {
         UserModel userModel = UserModel.fromJson(map);
+        
         if (password == userModel.password) {
           routeToService(Home(), userModel);
         } else {
@@ -210,7 +212,7 @@ class _SignInState extends State<SignIn> {
     } catch (e) {}
   }
 
-  Future<Null> routeToService(Widget myWidget, UserModel userModel) async {
+  Future<Null> routeToService(Widget myWidget, UserModel userModel ) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString("id", userModel.id);
     preferences.setString("Name", userModel.name);
@@ -218,6 +220,7 @@ class _SignInState extends State<SignIn> {
     preferences.setString("Gender", userModel.gender);
     preferences.setString("Country", userModel.country);
     preferences.setString("URLImage", userModel.urlImage);
+
 
     print("Enter Route to Service");
 

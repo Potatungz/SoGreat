@@ -9,6 +9,7 @@ import 'package:flutter_sogreat_application/screen/build_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/edit_account.dart';
 import 'package:flutter_sogreat_application/screen/find_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/my_garage_screen.dart';
+import 'package:flutter_sogreat_application/screen/show_list_showroom_all.dart';
 import 'package:flutter_sogreat_application/screen/showroom_screen.dart';
 import 'package:flutter_sogreat_application/screen/signin.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
@@ -72,8 +73,13 @@ class _HomeState extends State<Home> {
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("images/garage.png"), fit: BoxFit.cover),
+              image: AssetImage("images/garage.png"),
+              fit: BoxFit.cover,
+            ),
           ),
+        ), BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+          child: Container(color: Colors.black.withOpacity(0)),
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -384,7 +390,7 @@ class _HomeState extends State<Home> {
         title: Text("My Garage", style: TextStyle(color: Colors.white)),
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ShowRoomScreen();
+            return ShowListShowroomAll();
           }));
         },
       );

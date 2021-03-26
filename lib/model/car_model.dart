@@ -4,13 +4,17 @@ class CarModel {
   String brandName;
   String modelName;
   String pathImage;
+  String brandImage;
+  String detail;
 
   CarModel(
       {this.id,
       this.idShowroom,
       this.brandName,
       this.modelName,
-      this.pathImage});
+      this.pathImage,
+      this.brandImage,
+      this.detail});
 
   CarModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -18,6 +22,8 @@ class CarModel {
     brandName = json['BrandName'];
     modelName = json['ModelName'];
     pathImage = json['PathImage'];
+    brandImage = json['brandImage'];
+    detail = json['Detail'];
   }
 
   Map<String, dynamic> toJson() {
@@ -27,6 +33,8 @@ class CarModel {
     data['BrandName'] = this.brandName;
     data['ModelName'] = this.modelName;
     data['PathImage'] = this.pathImage;
+    data['brandImage'] = this.brandImage;
+    data['Detail'] = this.detail;
     return data;
   }
 }
