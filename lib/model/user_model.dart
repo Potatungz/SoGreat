@@ -3,22 +3,33 @@ class UserModel {
   String name;
   String user;
   String password;
-  String urlImage;
   String phone;
   String gender;
   String country;
+  String urlImage;
+  String nameGarage;
 
-  UserModel({this.id, this.name, this.user, this.password, this.urlImage,this.phone,this.gender,this.country});
+  UserModel(
+      {this.id,
+      this.name,
+      this.user,
+      this.password,
+      this.phone,
+      this.gender,
+      this.country,
+      this.urlImage,
+      this.nameGarage});
 
   UserModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['Name'];
     user = json['User'];
     password = json['Password'];
-    urlImage = json['URLImage'];
     phone = json['Phone'];
     gender = json['Gender'];
     country = json['Country'];
+    urlImage = json['URLImage'];
+    nameGarage = json['NameGarage'];
   }
 
   Map<String, dynamic> toJson() {
@@ -27,10 +38,11 @@ class UserModel {
     data['Name'] = this.name;
     data['User'] = this.user;
     data['Password'] = this.password;
-    data['URLImage'] = this.urlImage;
     data['Phone'] = this.phone;
     data['Gender'] = this.gender;
     data['Country'] = this.country;
+    data['URLImage'] = this.urlImage;
+    data['NameGarage'] = this.nameGarage;
     return data;
   }
 }

@@ -49,7 +49,6 @@ class _ShowListCarState extends State<ShowListCar> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     showroomName = preferences.getString("showroomName");
     urlImage = preferences.getString("URLImage");
-
     idShowroom = preferences.getString("idShowroom");
     brandName = preferences.getString("brandName");
     modelName = preferences.getString("modelName");
@@ -114,7 +113,7 @@ class _ShowListCarState extends State<ShowListCar> {
                               Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.65,
-                                  color: Colors.yellow,
+                                  // color: Colors.yellow,
                                   child: Text(
                                     carModels[index].modelName,
                                     style: TextStyle(
@@ -126,7 +125,7 @@ class _ShowListCarState extends State<ShowListCar> {
                               Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.65,
-                                  color: Colors.green,
+                                  // color: Colors.green,
                                   child: Text(
                                     carModels[index].modelName,
                                     style: TextStyle(
@@ -162,7 +161,7 @@ class _ShowListCarState extends State<ShowListCar> {
 
   Widget addCar(CarModel carModel, int index) {
     return Container(
-      color: Colors.cyan,
+      // color: Colors.cyan,
       child: FloatingActionButton(
         heroTag: "${carModels[index].id}",
         child: Icon(

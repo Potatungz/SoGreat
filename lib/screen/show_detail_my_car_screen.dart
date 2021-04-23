@@ -4,26 +4,23 @@ import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/showroom_model.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
-import 'package:flutter_sogreat_application/widget/show_detail_car.dart';
+import 'package:flutter_sogreat_application/widget/show_detail_my_car.dart';
 
-class ShowDetailCarScreen extends StatefulWidget {
+class ShowDetailMyCarScreen extends StatefulWidget {
   final CarModel carModel;
-  final ShowroomModel showroomModel;
   final GarageModel garageModel;
   final MyGarageModel myGarageModel;
-  ShowDetailCarScreen(
+  ShowDetailMyCarScreen(
       {Key key,
       this.carModel,
-      this.showroomModel,
       this.garageModel,
       this.myGarageModel})
       : super(key: key);
-
   @override
-  _ShowDetailCarScreenState createState() => _ShowDetailCarScreenState();
+  _ShowDetailMyCarScreenState createState() => _ShowDetailMyCarScreenState();
 }
 
-class _ShowDetailCarScreenState extends State<ShowDetailCarScreen> {
+class _ShowDetailMyCarScreenState extends State<ShowDetailMyCarScreen> {
   String modelName, urlImage, carDetail;
   CarModel carModel;
   ShowroomModel showroomModel;
@@ -32,14 +29,15 @@ class _ShowDetailCarScreenState extends State<ShowDetailCarScreen> {
   Widget detailWidget;
   String idShowroom;
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     carModel = widget.carModel;
-    showroomModel = widget.showroomModel;
-    detailWidget = ShowDetailCar(
-      carModel: carModel,
+    myGarageModel = widget.myGarageModel;
+    detailWidget = ShowDetailMyCar(
+      myGarageModel: myGarageModel,
     );
   }
 
@@ -53,7 +51,7 @@ class _ShowDetailCarScreenState extends State<ShowDetailCarScreen> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: MyStyle().showTitleH2(carModel.modelName),
+            title: MyStyle().showTitleH2(myGarageModel.modelCar),
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(

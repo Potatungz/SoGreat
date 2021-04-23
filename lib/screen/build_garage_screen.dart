@@ -134,7 +134,7 @@ class _BuildGarageScreenState extends State<BuildGarageScreen> {
 
   Future<Null> checkGarage() async {
     String url =
-        "${MyConstant().domain}/SoGreat/getGarageWhereGarage.php?isAdd=true&NameGarage=$nameGarage";
+        "${MyConstant().domain}/SoGreat/getUserWhereNameGarage.php?isAdd=true&NameGarage=$nameGarage";
 
     try {
       Response response = await Dio().get(url);
@@ -149,10 +149,9 @@ class _BuildGarageScreenState extends State<BuildGarageScreen> {
   Future<Null> createGarage() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     String idUser = preferences.getString('id');
-    String nameUser = preferences.getString('Name');
 
     String url =
-        "${MyConstant().domain}/SoGreat/addGarage.php?isAdd=true&idUser=$idUser&NameUser=$nameUser&NameGarage=$nameGarage";
+        "${MyConstant().domain}/SoGreat/updateUserWhereId.php?isAdd=true&id=$idUser&NameGarage=$nameGarage";
     try {
       Response response = await Dio().get(url);
       print("res = $response");

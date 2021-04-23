@@ -70,24 +70,23 @@ class _ShowListShowroomAllState extends State<ShowListShowroomAll> {
         );
         Navigator.push(context, route);
       },
-      child: Card(
+      child: Card(elevation: 0,
         color: Colors.transparent,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-                width: 120,
-                height: 120,
+                width: 150,
+                height: 150,
                 color: Colors.transparent,
                 child: Image.network(
                   "${MyConstant().domain}${showroomModel.urlImage}",
                   fit: BoxFit.cover,
                 )),
-            SizedBox(height: 10.0),
-            Container(
-              width: 120,
-              child: MyStyle().showTitleH2(showroomModel.showroomName),
-            ),
+            // Container(
+            //   width: 120,
+            //   child: MyStyle().showTitleH2(showroomModel.showroomName),
+            // ),
           ],
         ),
       ),
@@ -99,9 +98,9 @@ class _ShowListShowroomAllState extends State<ShowListShowroomAll> {
     return showroomCards.length == 0
         ? MyStyle().showProgress()
         : GridView.extent(
-            maxCrossAxisExtent: 210.0,
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 10.0,
+            maxCrossAxisExtent: 250.0,
+            // mainAxisSpacing: 10.0,
+            // crossAxisSpacing: 10.0,
             children: showroomCards,
           );
   }

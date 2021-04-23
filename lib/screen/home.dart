@@ -23,7 +23,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   File file;
-  String nameUser, urlImage, id, phone;
+  String nameUser, urlImage, id, phone,garageName;
   UserModel userModel;
 
   @override
@@ -38,6 +38,7 @@ class _HomeState extends State<Home> {
     nameUser = preferences.getString("Name");
     urlImage = preferences.getString("URLImage");
     phone = preferences.getString("Phone");
+    garageName = preferences.getString("GarageName");
     id = preferences.getString("id");
 
     String url =
@@ -56,6 +57,7 @@ class _HomeState extends State<Home> {
         nameUser = userModel.name;
         urlImage = userModel.urlImage;
         phone = userModel.phone;
+        garageName = userModel.nameGarage;
       });
     }
   }
@@ -269,6 +271,8 @@ class _HomeState extends State<Home> {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return MyGarageScreen();
           }));
+          
+          
         },
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [

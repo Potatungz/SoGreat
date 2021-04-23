@@ -103,10 +103,10 @@ class MyStyle {
   Text showTitleH3White(String title) => Text(
         title,
         style: TextStyle(
-          fontSize: 16.0,
+          fontSize: 14.0,
           color: Colors.white,
           fontWeight: FontWeight.w600,
-        ),
+        ),textAlign: TextAlign.center,
       );
 
   Text showTitleH3Red(String title) => Text(
@@ -115,7 +115,7 @@ class MyStyle {
           fontSize: 16.0,
           color: Colors.red.shade900,
           fontWeight: FontWeight.w500,
-        ),
+        )
       );
 
   Text showTitleH3Purple(String title) => Text(

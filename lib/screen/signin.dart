@@ -220,7 +220,7 @@ class _SignInState extends State<SignIn> {
     preferences.setString("Gender", userModel.gender);
     preferences.setString("Country", userModel.country);
     preferences.setString("URLImage", userModel.urlImage);
-
+    preferences.setString("NameGarage", userModel.nameGarage);
 
     print("Enter Route to Service");
 

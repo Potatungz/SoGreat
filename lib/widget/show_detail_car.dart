@@ -11,14 +11,20 @@ import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
+import 'package:flutter_sogreat_application/utility/sqlite_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowDetailCar extends StatefulWidget {
+  final UserModel userModel;
   final CarModel carModel;
   final ImageGalleryModel imageGalleryModel;
-  final GarageModel garageModel;
   final MyGarageModel myGarageModel;
-  ShowDetailCar({Key key, this.carModel, this.imageGalleryModel, this.garageModel, this.myGarageModel})
+  ShowDetailCar(
+      {Key key,
+      this.userModel,
+      this.carModel,
+      this.imageGalleryModel,
+      this.myGarageModel})
       : super(key: key);
 
   @override
@@ -26,14 +32,13 @@ class ShowDetailCar extends StatefulWidget {
 }
 
 class _ShowDetailCarState extends State<ShowDetailCar> {
-  // UserModel userModel;
+  UserModel userModel;
   CarModel carModel;
   ImageGalleryModel imageGalleryModel;
-  GarageModel garageModel;
   MyGarageModel myGarageModel;
 
   String idShowroom, brandName, brandImage, modelName, pathImage, detail;
-  String idCar, garageName, idGarage;
+  String idCar, idGarage, modelCar;
   List<CarModel> carModels = List();
   List<ImageGalleryModel> imageGalleryModels = List();
   List<GarageModel> garageModels = List();
@@ -43,29 +48,12 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
   void initState() {
     super.initState();
     print("Enter Show Detail Page");
+    userModel = widget.userModel;
     carModel = widget.carModel;
     imageGalleryModel = widget.imageGalleryModel;
-    garageModel = widget.garageModel;
     readImageGallery();
-    readGarageData();
-    
   }
-  Future<Null> readGarageData() async{
-    print("readDate");
-    String url = "${MyConstant().domain}/SoGreat/getMyGarageWhereIdGarage.php?isAdd=true&idGarage=$idGarage";
-    Response response = await Dio().get(url);
-    print("res ------> $response");
 
-    var result = json.decode(response.data);
-    print("result = $result");
-
-    for (var map in result) {
-      MyGarageModel myGarageModel = MyGarageModel.fromJson(map);
-      setState(() {
-        mygarageModels.add(myGarageModel);
-      });
-    }
-  }
   Future<Null> readImageGallery() async {
     idCar = carModel.id;
     String url =
@@ -318,14 +306,17 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
   }
 
   Future<Null> addCarToGarage() async {
-   String idGarage = garageModel.id;
-   String nameGarage = garageModel.nameGarage;
-   String idCar = carModel.id;
-   String modelCar = carModel.modelName;
-  print("idGarage = $idGarage, NameGarage = $nameGarage, idCar = $idCar, ModelCar = $modelCar");
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    idGarage = preferences.getString('id');
+    idCar = carModel.id;
+    modelCar = carModel.modelName;
+    pathImage = carModel.pathImage;
+    brandImage = carModel.brandImage;
+    print("idGarage = $idGarage , idCar = $idCar, ModelCar = $modelCar");
 
-    String urlAddCar = "${MyConstant().domain}/SoGreat/addCarToMyGarage.php?isAdd=true&idGarage=$idGarage&NameGarage=$nameGarage&idCar=$idCar&ModelCar=$modelCar";
-     try {
+    String urlAddCar =
+        "${MyConstant().domain}/SoGreat/addCarToMyGarage.php?isAdd=true&idGarage=$idGarage&idCar=$idCar&ModelCar=$modelCar&PathImage=$pathImage&BrandImage=$brandImage";
+    try {
       Response response = await Dio().get(urlAddCar);
       print("res = $response");
 
@@ -335,5 +326,32 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
         normailDialog(context, "Can't to Create Garage. Try Again");
       }
     } catch (e) {}
+    
+    // Map<String, dynamic> map = Map();
+    // map['idGarage'] = idGarage;
+    // map['idCar'] = idCar;
+    // map['modelCar'] = modelCar;
+    // map['pathImage'] = pathImage;
+    // map['brandImage'] = brandImage;
+    // print("map ==> ${map.toString()}");
+    // MyGarageModel myGarageModel = MyGarageModel.fromJson(map);
+    // var object = await SQLiteHelper().readAllDataFromSQLite();
+    // print("object = ${object.toString()}");
+    // if (object.length == 0) {
+    //   await SQLiteHelper().insertDataToSQLite(myGarageModel).then((value) {
+    //     print("Insert Success");
+    //   });
+    // } else {
+    //   String idGarageSQLite = object[0].idGarage;
+    //   print("idGarageSQLite ===> $idGarageSQLite");
+
+    //   if (idGarage == idGarageSQLite) {
+    //     await SQLiteHelper().insertDataToSQLite(myGarageModel).then((value) {
+    //       print("Insert Success");
+    //     });
+    //   } else {
+    //     normailDialog(context, "string");
+    //   }
+    // }
   }
 }
