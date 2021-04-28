@@ -9,6 +9,7 @@ import 'package:flutter_sogreat_application/screen/build_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/edit_account.dart';
 import 'package:flutter_sogreat_application/screen/find_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/my_garage_screen.dart';
+import 'package:flutter_sogreat_application/screen/search_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/show_list_showroom_all.dart';
 import 'package:flutter_sogreat_application/screen/showroom_screen.dart';
 import 'package:flutter_sogreat_application/screen/signin.dart';
@@ -137,7 +138,7 @@ class _HomeState extends State<Home> {
       child: FlatButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FindGarageScreen();
+            return SearchGarageScreen();
           }));
         },
         child:
