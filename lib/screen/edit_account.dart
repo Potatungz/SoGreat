@@ -160,7 +160,10 @@ class _EditAccountState extends State<EditAccount> {
                               color: Colors.grey,
                             ),
                             onPressed: () {
-                              chooseImage(ImageSource.gallery);
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: ((builder) => bottomSheet()));
+                              // chooseImage(ImageSource.gallery);
                             },
                           )
                           // child: Icon(Icons.edit, color: Colors.grey),
@@ -229,113 +232,113 @@ class _EditAccountState extends State<EditAccount> {
                       )),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(right: 8.0, left: 8.0),
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          height: 50,
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.grey, width: 1.0),
-                              color: Colors.white.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Center(
-                            child: DropdownButtonHideUnderline(
-                              child: ButtonTheme(
-                                alignedDropdown: true,
-                                child: DropdownButton(
-                                  iconSize: 36.0,
-                                  icon: Icon(Icons.arrow_drop_down),
-                                  isExpanded: false,
-                                  elevation: 0,
-                                  hint: genderChoose == "null" ||
-                                          genderChoose.isEmpty
-                                      ? Text(
-                                          "Gender",
-                                          style: TextStyle(color: Colors.grey),
-                                        )
-                                      : Text(
-                                          "$genderChoose",
-                                          style: TextStyle(color: Colors.grey),
-                                        ),
-                                  value: genderChoose,
-                                  items: listGender.map((valueItem) {
-                                    return DropdownMenuItem(
-                                      value: valueItem,
-                                      child: Text(
-                                        valueItem,
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (newValue) {
-                                    setState(
-                                      () {
-                                        genderChoose = newValue;
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(right: 8.0, left: 8.0),
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          height: 50,
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.grey, width: 1.0),
-                              color: Colors.white.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: Center(
-                            child: DropdownButtonHideUnderline(
-                              child: ButtonTheme(
-                                alignedDropdown: false,
-                                child: DropdownButton(
-                                    iconSize: 36.0,
-                                    icon: Icon(Icons.arrow_drop_down),
-                                    isExpanded: true,
-                                    elevation: 0,
-                                    hint: countryChoose == "null" ||
-                                            countryChoose.isEmpty
-                                        ? Text(
-                                            "Country",
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          )
-                                        : Text(
-                                            "$countryChoose",
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          ),
-                                    value: countryChoose,
-                                    items: listCounrtry.map((valueItem) {
-                                      return DropdownMenuItem(
-                                        value: valueItem,
-                                        child: Text(
-                                          valueItem,
-                                          style: TextStyle(color: Colors.grey),
-                                        ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        countryChoose = newValue;
-                                      });
-                                    }),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //     children: <Widget>[
+                  //       Container(
+                  //         padding: EdgeInsets.only(right: 8.0, left: 8.0),
+                  //         width: MediaQuery.of(context).size.width * 0.4,
+                  //         height: 50,
+                  //         decoration: BoxDecoration(
+                  //             border:
+                  //                 Border.all(color: Colors.grey, width: 1.0),
+                  //             color: Colors.white.withOpacity(0.5),
+                  //             borderRadius: BorderRadius.circular(12)),
+                  //         child: Center(
+                  //           child: DropdownButtonHideUnderline(
+                  //             child: ButtonTheme(
+                  //               alignedDropdown: true,
+                  //               child: DropdownButton(
+                  //                 iconSize: 36.0,
+                  //                 icon: Icon(Icons.arrow_drop_down),
+                  //                 isExpanded: false,
+                  //                 elevation: 0,
+                  //                 hint: genderChoose == "null" ||
+                  //                         genderChoose.isEmpty
+                  //                     ? Text(
+                  //                         "Gender",
+                  //                         style: TextStyle(color: Colors.grey),
+                  //                       )
+                  //                     : Text(
+                  //                         "$genderChoose",
+                  //                         style: TextStyle(color: Colors.grey),
+                  //                       ),
+                  //                 value: genderChoose,
+                  //                 items: listGender.map((valueItem) {
+                  //                   return DropdownMenuItem(
+                  //                     value: valueItem,
+                  //                     child: Text(
+                  //                       valueItem,
+                  //                       style: TextStyle(color: Colors.grey),
+                  //                     ),
+                  //                   );
+                  //                 }).toList(),
+                  //                 onChanged: (newValue) {
+                  //                   setState(
+                  //                     () {
+                  //                       genderChoose = newValue;
+                  //                     },
+                  //                   );
+                  //                 },
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       Container(
+                  //         padding: EdgeInsets.only(right: 8.0, left: 8.0),
+                  //         width: MediaQuery.of(context).size.width * 0.4,
+                  //         height: 50,
+                  //         decoration: BoxDecoration(
+                  //             border:
+                  //                 Border.all(color: Colors.grey, width: 1.0),
+                  //             color: Colors.white.withOpacity(0.5),
+                  //             borderRadius: BorderRadius.circular(12)),
+                  //         child: Center(
+                  //           child: DropdownButtonHideUnderline(
+                  //             child: ButtonTheme(
+                  //               alignedDropdown: false,
+                  //               child: DropdownButton(
+                  //                   iconSize: 36.0,
+                  //                   icon: Icon(Icons.arrow_drop_down),
+                  //                   isExpanded: true,
+                  //                   elevation: 0,
+                  //                   hint: countryChoose == "null" ||
+                  //                           countryChoose.isEmpty
+                  //                       ? Text(
+                  //                           "Country",
+                  //                           style:
+                  //                               TextStyle(color: Colors.grey),
+                  //                         )
+                  //                       : Text(
+                  //                           "$countryChoose",
+                  //                           style:
+                  //                               TextStyle(color: Colors.grey),
+                  //                         ),
+                  //                   value: countryChoose,
+                  //                   items: listCounrtry.map((valueItem) {
+                  //                     return DropdownMenuItem(
+                  //                       value: valueItem,
+                  //                       child: Text(
+                  //                         valueItem,
+                  //                         style: TextStyle(color: Colors.grey),
+                  //                       ),
+                  //                     );
+                  //                   }).toList(),
+                  //                   onChanged: (newValue) {
+                  //                     setState(() {
+                  //                       countryChoose = newValue;
+                  //                     });
+                  //                   }),
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 40.0,
                   ),
@@ -366,11 +369,12 @@ class _EditAccountState extends State<EditAccount> {
     try {
       var object = await ImagePicker().getImage(
         source: imageSource,
-        maxHeight: 800.0,
-        maxWidth: 800.0,
+        maxHeight: 600.0,
+        maxWidth: 600.0,
       );
       setState(() {
         file = File(object.path);
+        Navigator.pop(context);
       });
     } catch (e) {}
   }
@@ -395,6 +399,42 @@ class _EditAccountState extends State<EditAccount> {
             ]));
   }
 
+  Widget bottomSheet() {
+    return Container(
+      height: 100.0,
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Choose profile photo",
+            style: TextStyle(fontSize: 20.0),
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              FlatButton.icon(
+                icon: Icon(Icons.camera),
+                onPressed: () {
+                  chooseImage(ImageSource.camera);
+                },
+                label: Text("Camera"),
+              ),
+              FlatButton.icon(
+                icon: Icon(Icons.image),
+                onPressed: () {
+                  chooseImage(ImageSource.gallery);
+                },
+                label: Text("Gallery"),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   Future<Null> editThread() async {
     print("editThred");
     Random random = Random();
@@ -407,7 +447,7 @@ class _EditAccountState extends State<EditAccount> {
 
     String urlUpload = "${MyConstant().domain}/SoGreat/saveProfile.php";
     await Dio().post(urlUpload, data: formData).then((value) async {
-      urlImage = "${MyConstant().domain}/SoGreat/Profile/$nameFile";
+      urlImage = "/SoGreat/Profile/$nameFile";
 
       String id = userModel.id;
 

@@ -385,7 +385,7 @@ class _HomeState extends State<Home> {
         title: Text("Find", style: TextStyle(color: Colors.white)),
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FindGarageScreen();
+            return SearchGarageScreen();
           }));
         },
       );
@@ -395,7 +395,7 @@ class _HomeState extends State<Home> {
         title: Text("My Garage", style: TextStyle(color: Colors.white)),
         onTap: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return ShowListShowroomAll();
+            return MyGarageScreen();
           }));
         },
       );

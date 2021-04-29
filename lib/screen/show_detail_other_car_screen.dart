@@ -3,28 +3,29 @@ import 'package:flutter_sogreat_application/model/car_model.dart';
 import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/showroom_model.dart';
+import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
-import 'package:flutter_sogreat_application/widget/show_detail_car.dart';
+import 'package:flutter_sogreat_application/widget/show_detail_other_car.dart';
 
-class ShowDetailCarScreen extends StatefulWidget {
-  final CarModel carModel;
-  final ShowroomModel showroomModel;
+class ShowDetailOtherCarScreen extends StatefulWidget {
+  final UserModel userModel;
+    final CarModel carModel;
   final GarageModel garageModel;
   final MyGarageModel myGarageModel;
-  ShowDetailCarScreen(
+  ShowDetailOtherCarScreen(
       {Key key,
+      this.userModel,
       this.carModel,
-      this.showroomModel,
       this.garageModel,
       this.myGarageModel})
       : super(key: key);
-
   @override
-  _ShowDetailCarScreenState createState() => _ShowDetailCarScreenState();
+  _ShowDetailOtherCarScreenState createState() => _ShowDetailOtherCarScreenState();
 }
 
-class _ShowDetailCarScreenState extends State<ShowDetailCarScreen> {
-  String modelName, urlImage, carDetail;
+class _ShowDetailOtherCarScreenState extends State<ShowDetailOtherCarScreen> {
+   String modelName, urlImage, carDetail;
+   UserModel userModel;
   CarModel carModel;
   ShowroomModel showroomModel;
   GarageModel garageModel;
@@ -32,14 +33,16 @@ class _ShowDetailCarScreenState extends State<ShowDetailCarScreen> {
   Widget detailWidget;
   String idShowroom;
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    userModel = widget.userModel;
     carModel = widget.carModel;
-    showroomModel = widget.showroomModel;
-    detailWidget = ShowDetailCar(
-      carModel: carModel,
+    myGarageModel = widget.myGarageModel;
+    detailWidget = ShowDetailOtherCar(
+      myGarageModel: myGarageModel,
     );
   }
 
@@ -53,7 +56,7 @@ class _ShowDetailCarScreenState extends State<ShowDetailCarScreen> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: MyStyle().showTitleH2(carModel.brandName),
+            title: MyStyle().showTitleH2(""),
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(

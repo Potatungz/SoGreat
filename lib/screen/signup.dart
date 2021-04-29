@@ -16,7 +16,14 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  String name, user, password, confirmpassword, urlImage, phone, gender, country;
+  String name,
+      user,
+      password,
+      confirmpassword,
+      urlImage,
+      phone,
+      gender,
+      country;
   File file;
 
   @override
@@ -93,7 +100,10 @@ class _SignUpState extends State<SignUp> {
                               color: Colors.grey,
                             ),
                             onPressed: () {
-                              chooseImage(ImageSource.gallery);
+                              showModalBottomSheet(
+                                  context: context,
+                                  builder: ((builder) => bottomSheet()));
+                              // chooseImage(ImageSource.gallery);
                             },
                           )
                           // child: Icon(Icons.edit, color: Colors.grey),
@@ -302,8 +312,8 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<Null> registerThred() async {
-  
-        String url = "${MyConstant().domain}/SoGreat/addUser.php?isAdd=true&Name=$name&User=$user&Password=$password&Phone=$phone&Gender=$gender&Country=$country&URLImage=$urlImage";
+    String url =
+        "${MyConstant().domain}/SoGreat/addUser.php?isAdd=true&Name=$name&User=$user&Password=$password&Phone=$phone&Gender=$gender&Country=$country&URLImage=$urlImage";
 
     try {
       Response response = await Dio().get(url);
@@ -321,12 +331,47 @@ class _SignUpState extends State<SignUp> {
     try {
       var object = await ImagePicker().getImage(
         source: imageSource,
-        maxHeight: 800.0,
-        maxWidth: 800.0,
+        maxHeight: 600.0,
+        maxWidth: 600.0,
       );
       setState(() {
         file = File(object.path);
+        Navigator.pop(context);
       });
     } catch (e) {}
+  }
+
+  Widget bottomSheet() {
+    return Container(
+      height: 100.0,
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Choose profile photo",
+            style: TextStyle(fontSize: 20.0),
+          ),
+          SizedBox(height: 20),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              FlatButton.icon(
+                icon: Icon(Icons.camera),
+                onPressed: () {
+                  chooseImage(ImageSource.camera);
+                },
+                label: Text("Camera"),
+              ),
+              FlatButton.icon(
+                icon: Icon(Icons.image),
+                onPressed: () {
+                  chooseImage(ImageSource.gallery);
+                },label: Text("Gallery"),
+              )
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

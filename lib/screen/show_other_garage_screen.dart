@@ -1,33 +1,29 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_sogreat_application/model/garage_model.dart';
-import 'package:flutter_sogreat_application/screen/home.dart';
-
-import 'package:flutter_sogreat_application/screen/show_list_showroom_all.dart';
+import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
+import 'package:flutter_sogreat_application/widget/show_other_garage.dart';
 
-class ShowRoomScreen extends StatefulWidget {
-  final GarageModel garageModel;
-  ShowRoomScreen({
-    Key key,
-    this.garageModel,
-  }) : super(key: key);
-
+class ShowOtherGarageScreen extends StatefulWidget {
+  final UserModel userModel;
+ShowOtherGarageScreen({Key key, this.userModel,}) : super(key: key);
   @override
-  _ShowRoomScreenState createState() => _ShowRoomScreenState();
+  _ShowOtherGarageScreenState createState() => _ShowOtherGarageScreenState();
 }
 
-class _ShowRoomScreenState extends State<ShowRoomScreen> {
-  Widget currentWidget;
-  String idShowroom;
+class _ShowOtherGarageScreenState extends State<ShowOtherGarageScreen> {
+  UserModel userModel;
+String nameGarage;
+Widget currentWidget;
 
   @override
   void initState() {
+   
     super.initState();
-    currentWidget = ShowListShowroomAll();
+    userModel = widget.userModel;
+    currentWidget = ShowOtherGarage(userModel: userModel);
   }
-
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -46,26 +42,22 @@ class _ShowRoomScreenState extends State<ShowRoomScreen> {
         ))),
       ),
       BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-        child: Container(color: Colors.black.withOpacity(0)),
-      ),
+          filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+          child: Container(color: Colors.black.withOpacity(0)),
+        ),
       Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: MyStyle().showTitle("SHOWROOM"),
+        appBar: AppBar(title: MyStyle().showTitle("${userModel.nameGarage}"),
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () {
-              MaterialPageRoute route = MaterialPageRoute(
-                builder: (context) => Home(),
-              );
-              Navigator.push(context, route);
+              Navigator.pop(context);
             },
           ),
-        ),
-        body: currentWidget,
+        ),body: currentWidget,
+       
       ),
     ]);
   }

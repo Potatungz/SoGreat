@@ -1,39 +1,30 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/model/car_model.dart';
-import 'package:flutter_sogreat_application/model/garage_model.dart';
-import 'package:flutter_sogreat_application/model/image_gallery_model.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
-import 'package:flutter_sogreat_application/screen/showroom_screen.dart';
-import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
-import 'package:flutter_sogreat_application/utility/sqlite_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class ShowDetailMyCar extends StatefulWidget {
+class ShowDetailOtherCar extends StatefulWidget {
   final UserModel userModel;
   final MyGarageModel myGarageModel;
   final CarModel carModel;
-  ShowDetailMyCar({Key key, this.userModel, this.myGarageModel, this.carModel})
+  ShowDetailOtherCar(
+      {Key key, this.userModel, this.myGarageModel, this.carModel})
       : super(key: key);
-
   @override
-  _ShowDetailMyCarState createState() => _ShowDetailMyCarState();
+  _ShowDetailOtherCarState createState() => _ShowDetailOtherCarState();
 }
 
-class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
+class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
   UserModel userModel;
   CarModel carModel;
   MyGarageModel myGarageModel;
 
   String brandImage;
-  String modelName;
   String pathImage;
   String modelCar;
   String idCar, idGarage;
@@ -56,7 +47,8 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
     modelCar = myGarageModel.modelCar;
     brandImage = myGarageModel.brandImage;
     pathImage = myGarageModel.pathImage;
-    print("My iD Car = $idGarage");
+
+    print("My iD Car = ${myGarageModel.id}");
 
     String url =
         "${MyConstant().domain}/SoGreat/getCarWhereIdGarage.php?isAdd=true&idGarage=$idGarage";
@@ -128,8 +120,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                             image: DecorationImage(
                                 // image: AssetImage("images/logo.png")),
                                 image: NetworkImage(
-                              "${MyConstant().domain}$brandImage",
-                            )),
+                                    "${MyConstant().domain}$brandImage")),
                           ),
                         ),
                       )
@@ -139,35 +130,11 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   buildCarDetail(),
                   myCarInGarage(),
                   SizedBox(height: 20.0),
-                  buildAddButton(context),
-                  SizedBox(height: 20.0),
                 ],
               ),
               buildTitle(context),
             ]),
           );
-  }
-
-  Container buildAddButton(BuildContext context) {
-    return Container(
-      height: 60.0,
-      width: MediaQuery.of(context).size.width * 0.85,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: MyStyle().primaryColor),
-      child: FlatButton(
-        onPressed: () {
-          addCarToGarage();
-        },
-        child: Text(
-          "ADD Car",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16.0,
-          ),
-        ),
-      ),
-    );
   }
 
   Widget buildTitle(BuildContext context) {
@@ -295,94 +262,35 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
       height: 220.0,
       child: ListView.builder(
         itemCount: mygarageModels.length,
-        itemBuilder: (context, index) => Stack(children: [
-          Column(
-            children: [
-              Container(
-                margin: EdgeInsets.all(10.0),
-                width: 324.0,
-                height: 150.0,
-                // color: Colors.red,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(
-                          "${MyConstant().domain}${mygarageModels[index].pathImage}",
-                        ),
-                        fit: BoxFit.cover)),
-                child: GestureDetector(
-                  onTap: () => selectCar(mygarageModels[index], index),
+        itemBuilder: (context, index) => Stack(
+          children: [
+            Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.all(10.0),
+                  width: 324.0,
+                  height: 150.0,
+                  // color: Colors.red,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image:
+                              NetworkImage("${MyConstant().domain}${mygarageModels[index].pathImage}"),
+                          fit: BoxFit.cover)),
+                  child: GestureDetector(
+                    onTap: () => selectCar(mygarageModels[index], index),
+                  ),
                 ),
-              ),
-              Text(
-                "${mygarageModels[index].modelCar}",
-                style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
-              )
-            ],
-          ),
-          Positioned(
-              top: 0,
-              right: 0,
-              child: IconButton(
-                  icon: Icon(Icons.close),
-                  color: Colors.grey,
-                  onPressed: () async {
-                    print("$index");
-                    print("Click Delete Car ID ${mygarageModels[index].id}");
-                    deleteCarFromGarage(mygarageModels[index], index);
-                  })),
-        ]),
+                Text(
+                  "${mygarageModels[index].modelCar}",
+                  style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          ],
+        ),
         scrollDirection: Axis.horizontal,
       ),
     );
-  }
-
-  Future<Null> addCarToGarage() async {
-    print("Touch Add Car Button");
-    MaterialPageRoute route =
-        MaterialPageRoute(builder: (context) => ShowRoomScreen());
-    Navigator.pushAndRemoveUntil(context, route, (route) => false);
-  }
-
-  Future<Null> deleteCarFromGarage(
-      MyGarageModel myGarageModel, int index) async {
-    showDialog(
-        context: context,
-        builder: (_) => new CupertinoAlertDialog(
-              title: new Text("Move to Your Garage?"),
-              content: new Text("Car in your garage will be delete now?"),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )),
-                FlatButton(
-                    onPressed: () async {
-                      String id = myGarageModel.id;
-                      print("Delete Car id = $id");
-                      String urlDeleteCar =
-                          "${MyConstant().domain}/SoGreat/deleteCarWhereIdGarage.php?isAdd=true&id=$id";
-                      try {
-                        Response response = await Dio().get(urlDeleteCar);
-                        print("res = $response");
-
-                        if (response.toString() == "true") {
-                          setState(() {
-                            mygarageModels.removeAt(index);
-                          });
-                          print("Delete Success");
-                          Navigator.of(context).pop();
-                        } else {
-                          normailDialog(context, "Can't Delete Car. Try Again");
-                        }
-                      } catch (e) {}
-                    },
-                    child: Text("Move"))
-              ],
-            ));
   }
 
   Future<Null> selectCar(MyGarageModel myGarageModel, int index) async {

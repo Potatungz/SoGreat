@@ -3,6 +3,8 @@ import 'package:flutter_sogreat_application/model/car_model.dart';
 import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/showroom_model.dart';
+import 'package:flutter_sogreat_application/model/user_model.dart';
+import 'package:flutter_sogreat_application/screen/my_garage_screen.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
 import 'package:flutter_sogreat_application/widget/show_detail_my_car.dart';
 
@@ -10,11 +12,13 @@ class ShowDetailMyCarScreen extends StatefulWidget {
   final CarModel carModel;
   final GarageModel garageModel;
   final MyGarageModel myGarageModel;
+    final UserModel userModel;
   ShowDetailMyCarScreen(
       {Key key,
       this.carModel,
       this.garageModel,
-      this.myGarageModel})
+      this.myGarageModel,
+      this.userModel})
       : super(key: key);
   @override
   _ShowDetailMyCarScreenState createState() => _ShowDetailMyCarScreenState();
@@ -26,6 +30,7 @@ class _ShowDetailMyCarScreenState extends State<ShowDetailMyCarScreen> {
   ShowroomModel showroomModel;
   GarageModel garageModel;
   MyGarageModel myGarageModel;
+  UserModel userModel;
   Widget detailWidget;
   String idShowroom;
 
@@ -36,6 +41,7 @@ class _ShowDetailMyCarScreenState extends State<ShowDetailMyCarScreen> {
     super.initState();
     carModel = widget.carModel;
     myGarageModel = widget.myGarageModel;
+    userModel = widget.userModel;
     detailWidget = ShowDetailMyCar(
       myGarageModel: myGarageModel,
     );
@@ -51,13 +57,17 @@ class _ShowDetailMyCarScreenState extends State<ShowDetailMyCarScreen> {
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: MyStyle().showTitleH2(myGarageModel.modelCar),
+            title: MyStyle().showTitleH2("My Garage"),
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios, color: Colors.black),
               onPressed: () {
-                Navigator.pop(context);
+                 MaterialPageRoute route = MaterialPageRoute(
+                  builder: (context) => MyGarageScreen(
+                  ),
+                );
+                Navigator.push(context, route);
               },
             ),
           ),
