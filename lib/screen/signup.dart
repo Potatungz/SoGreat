@@ -23,7 +23,9 @@ class _SignUpState extends State<SignUp> {
       urlImage,
       phone,
       gender,
-      country;
+      country,
+      nameGarage,
+      carAmount;
   File file;
 
   @override
@@ -313,7 +315,7 @@ class _SignUpState extends State<SignUp> {
 
   Future<Null> registerThred() async {
     String url =
-        "${MyConstant().domain}/SoGreat/addUser.php?isAdd=true&Name=$name&User=$user&Password=$password&Phone=$phone&Gender=$gender&Country=$country&URLImage=$urlImage";
+        "${MyConstant().domain}/SoGreat/addUser.php?isAdd=true&Name=$name&User=$user&Password=$password&Phone=$phone&Country=$country&Gender=$gender&URLImage=$urlImage&NameGarage=$nameGarage&CarAmount=$carAmount";
 
     try {
       Response response = await Dio().get(url);
@@ -353,7 +355,8 @@ class _SignUpState extends State<SignUp> {
             style: TextStyle(fontSize: 20.0),
           ),
           SizedBox(height: 20),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               FlatButton.icon(
                 icon: Icon(Icons.camera),
@@ -366,7 +369,8 @@ class _SignUpState extends State<SignUp> {
                 icon: Icon(Icons.image),
                 onPressed: () {
                   chooseImage(ImageSource.gallery);
-                },label: Text("Gallery"),
+                },
+                label: Text("Gallery"),
               )
             ],
           )

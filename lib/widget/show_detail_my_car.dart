@@ -40,6 +40,8 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
   List<CarModel> carModels = List();
   List<MyGarageModel> mygarageModels = List();
 
+  bool showCar = false;
+
   @override
   void initState() {
     super.initState();
@@ -73,13 +75,15 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
         mygarageModels.add(myGarageModel);
       });
     }
+    setState(() {
+      print("Show Car Animated");
+      showCar = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return mygarageModels.length == 0
-        ? MyStyle().showProgress()
-        : SingleChildScrollView(
+    return SingleChildScrollView(
             child: Stack(children: <Widget>[
               Container(
                 height: 340.0,
@@ -88,17 +92,26 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                         image: AssetImage("images/bg_showroom.png"),
                         fit: BoxFit.cover)),
               ),
-              Container(
-                height: 340,
-                color: Colors.transparent,
+              AnimatedPositioned(
+                duration: Duration(
+                  milliseconds: 1000,
+                ),
+                bottom: showCar ? 450 : 550,
+                top: showCar ? 110 : 110,
+                right: showCar ? 0 : -200,
+                left: showCar ? 0 : 600,
                 child: Container(
-                    margin: EdgeInsets.all(50.0),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image:
-                              NetworkImage("${MyConstant().domain}$pathImage"),
-                          fit: BoxFit.cover),
-                    )),
+                  // height: 340,
+                  color: Colors.transparent,
+                  child: Container(
+                      // margin: EdgeInsets.all(50.0),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                "${MyConstant().domain}$pathImage"),
+                            fit: BoxFit.cover),
+                      )),
+                ),
               ),
               Column(
                 children: [
@@ -328,6 +341,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   onPressed: () async {
                     print("$index");
                     print("Click Delete Car ID ${mygarageModels[index].id}");
+                    print("Car Amount Now!! = ${mygarageModels.length}");
                     deleteCarFromGarage(mygarageModels[index], index);
                   })),
         ]),
@@ -374,7 +388,8 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                             mygarageModels.removeAt(index);
                           });
                           print("Delete Success");
-                          Navigator.of(context).pop();
+                          updateCarAmount();
+                          // Navigator.of(context).pop();
                         } else {
                           normailDialog(context, "Can't Delete Car. Try Again");
                         }
@@ -383,6 +398,22 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                     child: Text("Move"))
               ],
             ));
+  }
+
+  Future<Null> updateCarAmount() async {
+    String idUser = idGarage;
+    int carAmount = mygarageModels.length;
+    String url =
+        "${MyConstant().domain}/SoGreat/updateCarAmountWhereId.php?isAdd=true&id=$idUser&CarAmount=$carAmount";
+    try {
+      Response response = await Dio().get(url);
+      print("res = $response");
+
+      if (response.toString() == "true") {
+        print("Car Amount Now!! = $carAmount");
+        Navigator.pop(context);
+      }
+    } catch (e) {}
   }
 
   Future<Null> selectCar(MyGarageModel myGarageModel, int index) async {

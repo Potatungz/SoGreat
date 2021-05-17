@@ -23,9 +23,7 @@ class ShowMyGarage extends StatefulWidget {
 }
 
 class _ShowMyGarageState extends State<ShowMyGarage> {
-  _getRequests()async{
-
-  }
+  _getRequests() async {}
   UserModel userModel;
   MyGarageModel myGarageModel;
   CarModel carModel;
@@ -46,9 +44,7 @@ class _ShowMyGarageState extends State<ShowMyGarage> {
   Future<Null> onGoBack(dynamic value) async {
     print("Go Back");
     readMyGarage();
-    setState(() {
-    });
-
+    setState(() {});
   }
 
   Future<Null> readMyGarage() async {
@@ -80,6 +76,7 @@ class _ShowMyGarageState extends State<ShowMyGarage> {
           });
         }
       }
+      print("Car Amount Now!! = ${myGarageModels.length}");
     });
   }
 
@@ -97,7 +94,7 @@ class _ShowMyGarageState extends State<ShowMyGarage> {
 
   createCard(MyGarageModel myGarageModel, int index) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         print("Tap to Index = $index");
         print("Tap to Car ID :${myGarageModels[index].idCar}");
         MaterialPageRoute route = MaterialPageRoute(
@@ -113,19 +110,26 @@ class _ShowMyGarageState extends State<ShowMyGarage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-                height: 150.0,
-                color: Colors.transparent,
-                child: Image.network(
-                  "${MyConstant().domain}${myGarageModel.pathImage}",
-                  fit: BoxFit.contain,
-                )),
-            SizedBox(height: 10.0),
-            Container(
-              width: 180.0,
-              child: MyStyle().showTitleH3White(myGarageModel.modelCar),
+            Expanded(
+              flex: 4,
+              child: Container(
+                  height: 150.0,
+                  color: Colors.transparent,
+                  child: Image.network(
+                    "${MyConstant().domain}${myGarageModel.pathImage}",
+                    fit: BoxFit.contain,
+                  )),
             ),
-            SizedBox(height: 10.0),
+            // SizedBox(height: 10.0),
+            Expanded(
+              flex: 1,
+              child: Container(
+                margin: EdgeInsets.only(left: 5, right: 5),
+                width: 200.0,
+                child: MyStyle().showTitleH3White("${myGarageModel.modelCar}"),
+              ),
+            ),
+            // SizedBox(height: 10.0),
           ],
         ),
       ),

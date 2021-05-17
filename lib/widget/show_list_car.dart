@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/model/car_model.dart';
 import 'package:flutter_sogreat_application/model/garage_model.dart';
+import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/showroom_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/screen/show_detail_car_screen.dart';
@@ -14,7 +15,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ShowListCar extends StatefulWidget {
   final CarModel carModel;
   final ShowroomModel showroomModel;
-
   ShowListCar({
     Key key,
     this.showroomModel,
@@ -28,6 +28,7 @@ class ShowListCar extends StatefulWidget {
 class _ShowListCarState extends State<ShowListCar> {
   CarModel carModel;
   ShowroomModel showroomModel;
+  MyGarageModel myGarageModel;
   String idShowroom,
       showroomName,
       urlImage,
@@ -36,6 +37,7 @@ class _ShowListCarState extends State<ShowListCar> {
       pathImage,
       brandImage;
   List<CarModel> carModels = List();
+
 
   @override
   void initState() {
@@ -54,6 +56,7 @@ class _ShowListCarState extends State<ShowListCar> {
     modelName = preferences.getString("modelName");
     pathImage = preferences.getString("pathImage");
     brandImage = preferences.getString("brandImage");
+
 
     idShowroom = showroomModel.id;
     String url =
@@ -182,5 +185,4 @@ class _ShowListCarState extends State<ShowListCar> {
       ),
     );
   }
-  
 }

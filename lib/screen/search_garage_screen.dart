@@ -3,12 +3,14 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_sogreat_application/api/books_api.dart';
 import 'package:flutter_sogreat_application/model/book.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/screen/my_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/show_other_garage_screen.dart';
+import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
 import 'package:flutter_sogreat_application/widget/search_widget.dart';
@@ -25,8 +27,11 @@ class _SearchGarageScreenState extends State<SearchGarageScreen> {
   MyGarageModel myGarageModel;
   List<MyGarageModel> garages = List();
   List<UserModel> users = List();
+  List<String> listAmount = List();
   String query = '';
   Timer debouncer;
+
+  String idGarage;
 
   @override
   void initState() {
@@ -53,9 +58,11 @@ class _SearchGarageScreenState extends State<SearchGarageScreen> {
 
   Future<Null> init() async {
     final users = await FindGaragesApi.getUsers(query);
+
     
     setState(() {
       this.users = users;
+  
   
     });
   }
@@ -182,7 +189,7 @@ class _SearchGarageScreenState extends State<SearchGarageScreen> {
                     )),
                 Expanded(
                   child: Text(
-                    "${user.id}",
+                    "${user.carAmount}",
                     style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
                   ),
                 ),

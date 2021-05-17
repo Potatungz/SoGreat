@@ -43,15 +43,19 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
   List<ImageGalleryModel> imageGalleryModels = List();
   List<GarageModel> garageModels = List();
   List<MyGarageModel> mygarageModels = List();
+  bool showCar = false;
 
   @override
   void initState() {
     super.initState();
     print("Enter Show Detail Page");
+
     userModel = widget.userModel;
     carModel = widget.carModel;
     imageGalleryModel = widget.imageGalleryModel;
+    myGarageModel = widget.myGarageModel;
     readImageGallery();
+    readAmount();
   }
 
   Future<Null> readImageGallery() async {
@@ -70,6 +74,49 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
         imageGalleryModels.add(imageGalleryModel);
       });
     }
+       setState(() {
+            showCar = true;
+          });
+  }
+
+  Future<Null> readAmount() async {
+    print("ReadAmount");
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    idGarage = preferences.getString("id");
+    print("id Garage = $idGarage");
+
+    String url =
+        "${MyConstant().domain}/SoGreat/getCarWhereIdGarage.php?isAdd=true&idGarage=$idGarage";
+
+    Response response = await Dio().get(url);
+    print("res ------> $response");
+
+    var result = json.decode(response.data);
+    print("result = $result");
+
+    for (var map in result) {
+      MyGarageModel myGarageModel = MyGarageModel.fromJson(map);
+      setState(() {
+        mygarageModels.add(myGarageModel);
+      });
+    }
+  }
+
+  Future<Null> createGarage() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String idUser = preferences.getString('id');
+    int carAmount = mygarageModels.length + 1;
+    String url =
+        "${MyConstant().domain}/SoGreat/updateCarAmountWhereId.php?isAdd=true&id=$idUser&CarAmount=$carAmount";
+    try {
+      Response response = await Dio().get(url);
+      print("res = $response");
+
+      if (response.toString() == "true") {
+        print("carmount = $carAmount");
+        Navigator.pop(context);
+      }
+    } catch (e) {}
   }
 
   @override
@@ -83,17 +130,26 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
                   image: AssetImage("images/bg_showroom.png"),
                   fit: BoxFit.cover)),
         ),
-        Container(
-          height: 340,
-          color: Colors.transparent,
+        AnimatedPositioned(
+          duration: Duration(
+            milliseconds: 1000,
+          ),
+          bottom: showCar ? 450 : 550,
+          top: showCar ? 110 : 110,
+          right: showCar ? 0 : -200,
+          left: showCar ? 0 : 600,
           child: Container(
-              margin: EdgeInsets.all(50.0),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(
-                        "${MyConstant().domain}${carModel.pathImage}"),
-                    fit: BoxFit.cover),
-              )),
+            // height: 340,
+            color: Colors.transparent,
+            child: Container(
+                // padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration( 
+                  image: DecorationImage(
+                      image: NetworkImage(
+                          "${MyConstant().domain}${carModel.pathImage}"),
+                      fit: BoxFit.cover),
+                )),
+          ),
         ),
         Column(
           children: [
@@ -138,6 +194,15 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
           ],
         ),
         buildTitle(context),
+        // AnimatedPositioned(
+        //     duration: Duration(
+        //       milliseconds: 200,
+        //     ),
+        //     bottom: showCar ? 500 : 700,
+        //     top: 100,
+        //     right: -50,
+        //     left: showCar ? 150 : 300,
+        //     child: RedBox()),
       ]),
     );
   }
@@ -321,37 +386,26 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
       print("res = $response");
 
       if (response.toString() == "true") {
-        Navigator.pop(context);
+        // Navigator.pop(context);
+        createGarage();
       } else {
         normailDialog(context, "Can't to Create Garage. Try Again");
       }
     } catch (e) {}
-    
-    // Map<String, dynamic> map = Map();
-    // map['idGarage'] = idGarage;
-    // map['idCar'] = idCar;
-    // map['modelCar'] = modelCar;
-    // map['pathImage'] = pathImage;
-    // map['brandImage'] = brandImage;
-    // print("map ==> ${map.toString()}");
-    // MyGarageModel myGarageModel = MyGarageModel.fromJson(map);
-    // var object = await SQLiteHelper().readAllDataFromSQLite();
-    // print("object = ${object.toString()}");
-    // if (object.length == 0) {
-    //   await SQLiteHelper().insertDataToSQLite(myGarageModel).then((value) {
-    //     print("Insert Success");
-    //   });
-    // } else {
-    //   String idGarageSQLite = object[0].idGarage;
-    //   print("idGarageSQLite ===> $idGarageSQLite");
+  }
+}
 
-    //   if (idGarage == idGarageSQLite) {
-    //     await SQLiteHelper().insertDataToSQLite(myGarageModel).then((value) {
-    //       print("Insert Success");
-    //     });
-    //   } else {
-    //     normailDialog(context, "string");
-    //   }
-    // }
+class RedBox extends StatelessWidget {
+  const RedBox({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 50,
+      height: 50,
+      color: Colors.red,
+    );
   }
 }

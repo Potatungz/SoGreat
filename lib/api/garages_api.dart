@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 
@@ -27,3 +28,4 @@ class FindGaragesApi {
     }
   }
 }
+

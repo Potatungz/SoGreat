@@ -30,6 +30,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
   String idCar, idGarage;
   List<CarModel> carModels = List();
   List<MyGarageModel> mygarageModels = List();
+  bool showCar = false;
 
   @override
   void initState() {
@@ -65,76 +66,85 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
         mygarageModels.add(myGarageModel);
       });
     }
+    setState(() {
+      showCar = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return mygarageModels.length == 0
-        ? MyStyle().showProgress()
-        : SingleChildScrollView(
-            child: Stack(children: <Widget>[
-              Container(
-                height: 340.0,
+    return SingleChildScrollView(
+      child: Stack(children: <Widget>[
+        Container(
+          height: 340.0,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("images/bg_showroom.png"),
+                  fit: BoxFit.cover)),
+        ),
+        AnimatedPositioned(
+          duration: Duration(
+            milliseconds: 1000,
+          ),
+          bottom: showCar ? 450 : 550,
+          top: showCar ? 110 : 110,
+          right: showCar ? 0 : -200,
+          left: showCar ? 0 : 600,
+          child: Container(
+            // height: 340,
+            color: Colors.transparent,
+            child: Container(
+                // margin: EdgeInsets.all(50.0),
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("images/bg_showroom.png"),
-                        fit: BoxFit.cover)),
-              ),
-              Container(
-                height: 340,
-                color: Colors.transparent,
-                child: Container(
-                    margin: EdgeInsets.all(50.0),
+              image: DecorationImage(
+                  image: NetworkImage("${MyConstant().domain}$pathImage"),
+                  fit: BoxFit.cover),
+            )),
+          ),
+        ),
+        Column(
+          children: [
+            Row(
+              children: [
+                Opacity(
+                  opacity: 0.9,
+                  child: ShaderMask(
+                    shaderCallback: (rect) => LinearGradient(
+                            begin: Alignment.center,
+                            end: Alignment.centerLeft,
+                            colors: [Colors.black, Colors.transparent])
+                        .createShader(rect),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: 60.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  height: 60.0,
+                  color: Color(0xfff1f1f1),
+                  child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                          image:
-                              NetworkImage("${MyConstant().domain}$pathImage"),
-                          fit: BoxFit.cover),
-                    )),
-              ),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Opacity(
-                        opacity: 0.9,
-                        child: ShaderMask(
-                          shaderCallback: (rect) => LinearGradient(
-                                  begin: Alignment.center,
-                                  end: Alignment.centerLeft,
-                                  colors: [Colors.black, Colors.transparent])
-                              .createShader(rect),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            height: 60.0,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.2,
-                        height: 60.0,
-                        color: Color(0xfff1f1f1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                                // image: AssetImage("images/logo.png")),
-                                image: NetworkImage(
-                                    "${MyConstant().domain}$brandImage")),
-                          ),
-                        ),
-                      )
-                    ],
+                          // image: AssetImage("images/logo.png")),
+                          image: NetworkImage(
+                              "${MyConstant().domain}$brandImage")),
+                    ),
                   ),
-                  SizedBox(height: 280.0),
-                  buildCarDetail(),
-                  myCarInGarage(),
-                  SizedBox(height: 20.0),
-                ],
-              ),
-              buildTitle(context),
-            ]),
-          );
+                )
+              ],
+            ),
+            SizedBox(height: 280.0),
+            buildCarDetail(),
+            myCarInGarage(),
+            SizedBox(height: 20.0),
+          ],
+        ),
+        buildTitle(context),
+      ]),
+    );
   }
 
   Widget buildTitle(BuildContext context) {
@@ -273,8 +283,8 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
                   // color: Colors.red,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image:
-                              NetworkImage("${MyConstant().domain}${mygarageModels[index].pathImage}"),
+                          image: NetworkImage(
+                              "${MyConstant().domain}${mygarageModels[index].pathImage}"),
                           fit: BoxFit.cover)),
                   child: GestureDetector(
                     onTap: () => selectCar(mygarageModels[index], index),

@@ -18,30 +18,28 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
     checkPreferance();
   }
 
-  Future<Null> checkPreferance()async{
+  Future<Null> checkPreferance() async {
     try {
       SharedPreferences preferences = await SharedPreferences.getInstance();
 
       String user = preferences.getString("User");
       if (user != null && user.isNotEmpty) {
-        if (user == "$user") { 
-          MaterialPageRoute route = MaterialPageRoute(builder: (context) => Home(),);
+        if (user == "$user") {
+          MaterialPageRoute route = MaterialPageRoute(
+            builder: (context) => Home(),
+          );
           Navigator.pushAndRemoveUntil(context, route, (route) => false);
         } else {
           normailDialog(context, "Error Username");
         }
       }
-      
-    } catch (e) {
-    }
-
+    } catch (e) {}
   }
 
   bool statusRedEye = true;
@@ -202,7 +200,7 @@ class _SignInState extends State<SignIn> {
 
       for (var map in result) {
         UserModel userModel = UserModel.fromJson(map);
-        
+
         if (password == userModel.password) {
           routeToService(Home(), userModel);
         } else {
@@ -212,7 +210,7 @@ class _SignInState extends State<SignIn> {
     } catch (e) {}
   }
 
-  Future<Null> routeToService(Widget myWidget, UserModel userModel ) async {
+  Future<Null> routeToService(Widget myWidget, UserModel userModel) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString("id", userModel.id);
     preferences.setString("Name", userModel.name);
@@ -221,6 +219,7 @@ class _SignInState extends State<SignIn> {
     preferences.setString("Country", userModel.country);
     preferences.setString("URLImage", userModel.urlImage);
     preferences.setString("NameGarage", userModel.nameGarage);
+    preferences.setString("CarAmount", userModel.carAmount);
 
     print("Enter Route to Service");
 
