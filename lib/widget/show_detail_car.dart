@@ -19,6 +19,7 @@ class ShowDetailCar extends StatefulWidget {
   final CarModel carModel;
   final ImageGalleryModel imageGalleryModel;
   final MyGarageModel myGarageModel;
+
   ShowDetailCar(
       {Key key,
       this.userModel,
@@ -44,11 +45,15 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
   List<GarageModel> garageModels = List();
   List<MyGarageModel> mygarageModels = List();
   bool showCar = false;
+  bool isButtonDisabled = true;
+
+
 
   @override
   void initState() {
     super.initState();
     print("Enter Show Detail Page");
+ 
 
     userModel = widget.userModel;
     carModel = widget.carModel;
@@ -74,9 +79,9 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
         imageGalleryModels.add(imageGalleryModel);
       });
     }
-       setState(() {
-            showCar = true;
-          });
+    setState(() {
+      showCar = true;
+    });
   }
 
   Future<Null> readAmount() async {
@@ -143,12 +148,12 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
             color: Colors.transparent,
             child: Container(
                 // padding: EdgeInsets.all(10.0),
-                decoration: BoxDecoration( 
-                  image: DecorationImage(
-                      image: NetworkImage(
-                          "${MyConstant().domain}${carModel.pathImage}"),
-                      fit: BoxFit.cover),
-                )),
+                decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: NetworkImage(
+                      "${MyConstant().domain}${carModel.pathImage}"),
+                  fit: BoxFit.cover),
+            )),
           ),
         ),
         Column(
@@ -215,9 +220,14 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
           borderRadius: BorderRadius.circular(12),
           color: MyStyle().primaryColor),
       child: FlatButton(
-        onPressed: () {
-          addCarToGarage();
-        },
+        onPressed: isButtonDisabled == false
+            ? null
+            : () {
+                setState(() {
+                  isButtonDisabled = false;
+                });
+                addCarToGarage();
+              },
         child: Text(
           "ADD TO GARAGE",
           style: TextStyle(
@@ -261,7 +271,7 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
                   "Acceleration",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -270,7 +280,7 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
                   "3.6 Sec",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -294,7 +304,7 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
                   "Horsepower",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -303,7 +313,7 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
                   "550 HP",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -327,7 +337,7 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
                   "Torque",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -336,7 +346,7 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
                   "502 ib-ft",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -389,6 +399,9 @@ class _ShowDetailCarState extends State<ShowDetailCar> {
         // Navigator.pop(context);
         createGarage();
       } else {
+        setState(() {
+          isButtonDisabled = true;
+        });
         normailDialog(context, "Can't to Create Garage. Try Again");
       }
     } catch (e) {}

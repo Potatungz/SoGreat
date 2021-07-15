@@ -6,6 +6,8 @@ import 'package:flutter_sogreat_application/model/showroom_model.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
 import 'package:flutter_sogreat_application/widget/show_detail_car.dart';
 
+import 'home.dart';
+
 class ShowDetailCarScreen extends StatefulWidget {
   final CarModel carModel;
   final ShowroomModel showroomModel;
@@ -62,6 +64,20 @@ class _ShowDetailCarScreenState extends State<ShowDetailCarScreen> {
                 Navigator.pop(context);
               },
             ),
+            actions: [
+              IconButton(
+                  icon: Icon(
+                    Icons.home_rounded,
+                    color: MyStyle().primaryColor,
+                  ),
+                  onPressed: () {
+                    print("Back to homescreen");
+                      MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => Home(),
+              );
+              Navigator.push(context, route);
+                  }),
+            ],
           ),
           body: detailWidget,
         ),

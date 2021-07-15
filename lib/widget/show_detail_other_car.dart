@@ -79,14 +79,14 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
           height: 340.0,
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage("images/bg_showroom.png"),
+                  image: AssetImage("images/garage.png"),
                   fit: BoxFit.cover)),
         ),
         AnimatedPositioned(
           duration: Duration(
             milliseconds: 1000,
           ),
-          bottom: showCar ? 450 : 550,
+          bottom: showCar ? 350 : 500,
           top: showCar ? 110 : 110,
           right: showCar ? 0 : -200,
           left: showCar ? 0 : 600,
@@ -178,7 +178,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
                   "Acceleration",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -187,7 +187,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
                   "3.6 Sec",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -211,7 +211,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
                   "Horsepower",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -220,7 +220,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
                   "550 HP",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -244,7 +244,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
                   "Torque",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -253,7 +253,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
                   "502 ib-ft",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -310,6 +310,7 @@ class _ShowDetailOtherCarState extends State<ShowDetailOtherCar> {
       modelCar = mygarageModels[index].modelCar;
       pathImage = mygarageModels[index].pathImage;
       brandImage = mygarageModels[index].brandImage;
-    });
+    }
+    );
   }
 }

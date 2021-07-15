@@ -4,9 +4,11 @@ import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/showroom_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
+import 'package:flutter_sogreat_application/screen/home.dart';
 import 'package:flutter_sogreat_application/screen/my_garage_screen.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
 import 'package:flutter_sogreat_application/widget/show_detail_my_car.dart';
+import 'package:flutter_sogreat_application/widget/show_my_garage.dart';
 
 class ShowDetailMyCarScreen extends StatefulWidget {
   final CarModel carModel;
@@ -69,7 +71,20 @@ class _ShowDetailMyCarScreenState extends State<ShowDetailMyCarScreen> {
                 );
                 Navigator.push(context, route);
               },
-            ),
+            ), actions: [
+              IconButton(
+                  icon: Icon(
+                    Icons.home_rounded,
+                    color: MyStyle().primaryColor,
+                  ),
+                  onPressed: () {
+                    print("Back to homescreen");
+                      MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => MyGarageScreen(),
+              );
+              Navigator.push(context, route);
+                  }),
+            ],
           ),
           body: detailWidget,
         ),

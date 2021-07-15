@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_sogreat_application/screen/showroom_screen.dart';
 import 'package:flutter_sogreat_application/screen/signin.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -24,7 +26,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   File file;
-  String nameUser, urlImage, id, phone,garageName;
+  String nameUser, urlImage, id, phone, garageName;
   UserModel userModel;
 
   @override
@@ -69,6 +71,70 @@ class _HomeState extends State<Home> {
     //exit(0);
   }
 
+  Widget _landscapeView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.75,
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: Image.asset("images/logo.png"),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(30.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(flex: 2, child: myGarageButtonLandscape()),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.025),
+              Flexible(flex: 2, child: buildButtonLandscape()),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.025),
+              Flexible(flex: 2, child: showroomButtonLandscape()),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.025),
+              Flexible(flex: 2, child: findButtonLandscape()),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _portraitView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.75,
+            height: MediaQuery.of(context).size.height * 0.2,
+            child: Image.asset("images/logo.png"),
+          ),
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.05,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(flex: 2, child: myGarageButton()),
+            SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+            Flexible(flex: 2, child: buildButton()),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(flex: 2, child: showroomButton()),
+            SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+            Flexible(flex: 2, child: findButton()),
+          ],
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -80,7 +146,8 @@ class _HomeState extends State<Home> {
               fit: BoxFit.cover,
             ),
           ),
-        ), BackdropFilter(
+        ),
+        BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
           child: Container(color: Colors.black.withOpacity(0)),
         ),
@@ -90,32 +157,12 @@ class _HomeState extends State<Home> {
             backgroundColor: Colors.transparent,
             elevation: 0,
           ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Image.asset("images/logo.png"),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  myGarageButton(),
-                  buildButton(),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  showroomButton(),
-                  findButton(),
-                ],
-              )
-            ],
-          ),
+          body: OrientationBuilder(builder: (context, orientation) {
+            return SingleChildScrollView(
+                child: orientation == Orientation.portrait
+                    ? _portraitView()
+                    : _landscapeView());
+          }),
           drawer: showDrawer(context),
         ),
       ],
@@ -126,8 +173,204 @@ class _HomeState extends State<Home> {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
       padding: EdgeInsets.all(8.0),
-      width: 145.0,
-      height: 145.0,
+      width: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.height * 0.2,
+      decoration: BoxDecoration(
+          color: MyStyle().primaryColor.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(30.0),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black26, blurRadius: 10.0, spreadRadius: 1.0)
+          ]),
+      child: FlatButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return SearchGarageScreen();
+          }));
+        },
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Expanded(
+            flex: 4,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.search,
+                  color: Colors.white,
+                  size: 40.0,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Text(
+                  "Find",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14.0),
+                ),
+              ],
+            ),
+          )
+        ]),
+      ),
+    );
+  }
+
+  Container showroomButton() {
+    return Container(
+      margin: EdgeInsets.only(top: 10, bottom: 10),
+      padding: EdgeInsets.all(8.0),
+      width: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.height * 0.185,
+      decoration: BoxDecoration(
+          color: MyStyle().primaryColor.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(30.0),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black26, blurRadius: 10.0, spreadRadius: 1.0)
+          ]),
+      child: FlatButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return ShowRoomScreen();
+          }));
+        },
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Expanded(
+            flex: 4,
+            child: Row(
+              children: [
+                Icon(
+                  FontAwesomeIcons.carAlt,
+                  color: Colors.white,
+                  size: 36.0,
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Text(
+                  "Showroom",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14.0),
+                ),
+              ],
+            ),
+          )
+        ]),
+      ),
+    );
+  }
+
+  Container buildButton() {
+    return Container(
+      margin: EdgeInsets.only(top: 10, bottom: 10),
+      padding: EdgeInsets.all(8.0),
+      width: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.height * 0.185,
+      decoration: BoxDecoration(
+          color: MyStyle().primaryColor.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(30.0),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black26, blurRadius: 10.0, spreadRadius: 1.0)
+          ]),
+      child: FlatButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return BuildGarageScreen();
+          }));
+        },
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Expanded(
+            flex: 4,
+            child: Row(
+              children: [
+                Icon(Icons.settings, color: Colors.white, size: 40.0),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Text("Build",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14.0)),
+              ],
+            ),
+          )
+        ]),
+      ),
+    );
+  }
+
+  Container myGarageButton() {
+    return Container(
+      margin: EdgeInsets.only(top: 10, bottom: 10),
+      padding: EdgeInsets.all(8.0),
+      width: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.height * 0.185,
+      decoration: BoxDecoration(
+          color: MyStyle().primaryColor.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(30.0),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black26, blurRadius: 10.0, spreadRadius: 1.0)
+          ]),
+      child: FlatButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return MyGarageScreen();
+          }));
+        },
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Expanded(
+            flex: 4,
+            child: Row(
+              children: [
+                Icon(Icons.home, color: Colors.white, size: 40.0),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Text("My Garage",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14.0)),
+              ],
+            ),
+          )
+        ]),
+      ),
+    );
+  }
+
+  Container findButtonLandscape() {
+    return Container(
+      margin: EdgeInsets.only(top: 10, bottom: 10),
+      padding: EdgeInsets.all(8.0),
+      width: MediaQuery.of(context).size.width * 0.3,
+      height: MediaQuery.of(context).size.height * 0.3,
       decoration: BoxDecoration(
           color: MyStyle().primaryColor.withOpacity(0.8),
           borderRadius: BorderRadius.circular(30.0),
@@ -145,21 +388,28 @@ class _HomeState extends State<Home> {
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Row(
             children: [
-              Icon(
-                Icons.search,
-                color: Colors.white,
-                size: 40.0,
+              Expanded(
+                flex: 1,
+                child: Icon(
+                  Icons.search,
+                  color: Colors.white,
+                  size: 40.0,
+                ),
               ),
-            ],
-          ),
-          Row(
-            children: [
-              Text(
-                "Find",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14.0),
+              SizedBox(
+                width: 16.0,
+              ),
+              Expanded(
+                flex: 3,
+                child: AutoSizeText(
+                  "Find",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16.0),
+                  maxLines: 1,
+                  maxFontSize: 18.0,
+                ),
               ),
             ],
           )
@@ -168,12 +418,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Container showroomButton() {
+  Container showroomButtonLandscape() {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
       padding: EdgeInsets.all(8.0),
-      width: 145.0,
-      height: 145.0,
+      width: MediaQuery.of(context).size.width * 0.3,
+      height: MediaQuery.of(context).size.height * 0.3,
       decoration: BoxDecoration(
           color: MyStyle().primaryColor.withOpacity(0.8),
           borderRadius: BorderRadius.circular(30.0),
@@ -191,21 +441,28 @@ class _HomeState extends State<Home> {
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Row(
             children: [
-              Icon(
-                Icons.car_repair,
-                color: Colors.white,
-                size: 40.0,
+              Expanded(
+                flex: 1,
+                child: Icon(
+                  FontAwesomeIcons.carAlt,
+                  color: Colors.white,
+                  size: 36.0,
+                ),
               ),
-            ],
-          ),
-          Row(
-            children: [
-              Text(
-                "Showroom",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14.0),
+              SizedBox(
+                width: 16.0,
+              ),
+              Expanded(
+                flex: 3,
+                child: AutoSizeText(
+                  "Showroom",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16.0),
+                  maxLines: 1,
+                  maxFontSize: 18.0,
+                ),
               ),
             ],
           )
@@ -214,12 +471,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Container buildButton() {
+  Container buildButtonLandscape() {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
       padding: EdgeInsets.all(8.0),
-      width: 145.0,
-      height: 145.0,
+      width: MediaQuery.of(context).size.width * 0.3,
+      height: MediaQuery.of(context).size.height * 0.3,
       decoration: BoxDecoration(
           color: MyStyle().primaryColor.withOpacity(0.8),
           borderRadius: BorderRadius.circular(30.0),
@@ -237,16 +494,29 @@ class _HomeState extends State<Home> {
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Row(
             children: [
-              Icon(Icons.settings, color: Colors.white, size: 40.0),
-            ],
-          ),
-          Row(
-            children: [
-              Text("Build",
+              Expanded(
+                flex: 2,
+                child: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                  size: 40.0,
+                ),
+              ),
+              SizedBox(
+                width: 16.0,
+              ),
+              Expanded(
+                flex: 3,
+                child: AutoSizeText(
+                  "Build",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
-                      fontSize: 14.0)),
+                      fontSize: 16.0),
+                  maxLines: 1,
+                  maxFontSize: 18.0,
+                ),
+              ),
             ],
           )
         ]),
@@ -254,12 +524,12 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Container myGarageButton() {
+  Container myGarageButtonLandscape() {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
       padding: EdgeInsets.all(8.0),
-      width: 145.0,
-      height: 145.0,
+      width: MediaQuery.of(context).size.width * 0.3,
+      height: MediaQuery.of(context).size.height * 0.3,
       decoration: BoxDecoration(
           color: MyStyle().primaryColor.withOpacity(0.8),
           borderRadius: BorderRadius.circular(30.0),
@@ -272,23 +542,34 @@ class _HomeState extends State<Home> {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return MyGarageScreen();
           }));
-          
-          
         },
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Row(
             children: [
-              Icon(Icons.home, color: Colors.white, size: 40.0),
-            ],
-          ),
-          Row(
-            children: [
-              Text("My Garage",
+              Expanded(
+                flex: 1,
+                child: Icon(
+                  Icons.home,
+                  color: Colors.white,
+                  size: 40.0,
+                ),
+              ),
+              SizedBox(
+                width: 16.0,
+              ),
+              Expanded(
+                flex: 3,
+                child: AutoSizeText(
+                  "My Garage",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
-                      fontSize: 14.0)),
+                      fontSize: 16.0),
+                  maxLines: 1,
+                  maxFontSize: 18.0,
+                ),
+              ),
             ],
           )
         ]),
@@ -373,9 +654,10 @@ class _HomeState extends State<Home> {
           style: TextStyle(color: Colors.white),
         ),
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return SignIn();
-          }));
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => SignIn()),
+              (Route<dynamic> route) => false);
+
           signOutProcess();
         },
       );

@@ -23,6 +23,7 @@ Widget currentWidget;
     super.initState();
     userModel = widget.userModel;
     currentWidget = ShowOtherGarage(userModel: userModel);
+    
   }
   @override
   Widget build(BuildContext context) {
@@ -47,7 +48,7 @@ Widget currentWidget;
         ),
       Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: MyStyle().showTitle("${userModel.nameGarage}"),
+        appBar: AppBar(title: userModel.nameGarage == "" ? Text("No Name"):MyStyle().showTitle(userModel.nameGarage),
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(

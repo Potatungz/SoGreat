@@ -5,10 +5,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
+import 'package:flutter_sogreat_application/utility/my_encryption.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
+import 'package:flutter_sogreat_application/utility/show_toast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:toast/toast.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -16,16 +20,21 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  String name,
-      user,
-      password,
-      confirmpassword,
-      urlImage,
-      phone,
-      gender,
-      country,
-      nameGarage,
-      carAmount;
+  final formKey = GlobalKey<FormState>();
+  String name, user, password, confirmpassword, urlImage;
+
+  String phone = "Your Phone Number";
+  String gender = "Choose Gender";
+  String country = "Choose Country";
+  String nameGarage = "";
+  String carAmount = "0";
+
+  var encryptedPassword;
+
+  bool statusRedEyeNewPassword = true;
+  bool statusRedEyeConfirmPassword = true;
+  bool isButtonDisabled = true;
+
   File file;
 
   @override
@@ -115,24 +124,27 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               SizedBox(height: 35),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1.0),
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12)),
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
                       child: Center(
-                          child: TextField(
+                          child: TextFormField(
                         keyboardType: TextInputType.name,
+                        validator:
+                            RequiredValidator(errorText: "Please a Enter Name"),
                         onChanged: (value) => name = value.trim(),
                         //autofocus: true,
                         decoration: InputDecoration(
-                            border: InputBorder.none,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: MyStyle().primaryColor)),
                             prefixIcon: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8.0),
                               child: Icon(
@@ -141,55 +153,85 @@ class _SignUpState extends State<SignUp> {
                                 color: Colors.grey,
                               ),
                             ),
-                            hintText: "Name",
-                            hintStyle: TextStyle(color: Colors.grey)),
+                            labelText: "Full name",
+                            hintText: "Enter Your Full Name",
+                            hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w400)),
                       )),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1.0),
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
                       child: Center(
-                          child: TextField(
+                          child: TextFormField(
                         keyboardType: TextInputType.emailAddress,
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Please a Enter';
+                          }
+                          if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+                              .hasMatch(value)) {
+                            return 'Please a valid Email';
+                          }
+                          return null;
+                        },
                         onChanged: (value) => user = value.trim(),
                         decoration: InputDecoration(
-                            border: InputBorder.none,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: MyStyle().primaryColor)),
                             prefixIcon: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: EdgeInsets.symmetric(horizontal: 6.0),
                               child: Icon(
                                 FontAwesomeIcons.envelope,
                                 size: 20,
                                 color: Colors.grey,
                               ),
                             ),
-                            hintText: "Enter Your Email",
-                            hintStyle: TextStyle(color: Colors.grey)),
+                            labelText: "Email",
+                            hintText: "Enter Your email",
+                            hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w400)),
                       )),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1.0),
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
                       child: Center(
-                          child: TextField(
-                        obscureText: true,
-                        onChanged: (value) => password = value.trim(),
-                        //autofocus: true,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
+                        child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          obscureText: statusRedEyeNewPassword,
+                          onChanged: (value) => password = value.trim(),
+                          validator: (String value) {
+                            if (value.isEmpty) {
+                              return 'Please Enter Password';
+                            }
+                            if (value.length < 8) {
+                              return 'Password must be atleast 8 characters long';
+                            }
+                            // return null;
+
+                            if (!RegExp(
+                                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                .hasMatch(value)) {
+                              return 'Password should contain letters, numbers & symbols';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: MyStyle().primaryColor)),
                             prefixIcon: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8.0),
                               child: Icon(
@@ -198,79 +240,141 @@ class _SignUpState extends State<SignUp> {
                                 color: Colors.grey,
                               ),
                             ),
-                            hintText: "Create Your Password",
-                            hintStyle: TextStyle(color: Colors.grey)),
-                      )),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1.0),
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Center(
-                          child: TextField(
-                        obscureText: true,
-                        onChanged: (value) => confirmpassword = value.trim(),
-                        //autofocus: true,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            prefixIcon: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Icon(
-                                FontAwesomeIcons.lock,
-                                size: 20,
-                                color: Colors.grey,
-                              ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    statusRedEyeNewPassword =
+                                        !statusRedEyeNewPassword;
+                                  },
+                                );
+                              },
+                              icon: statusRedEyeNewPassword
+                                  ? Icon(Icons.remove_red_eye,
+                                      color: Colors.black45)
+                                  : Icon(Icons.remove_red_eye_outlined,
+                                      color: Colors.black45),
                             ),
-                            hintText: "Re-enter Password",
-                            hintStyle: TextStyle(color: Colors.grey)),
-                      )),
+                            labelText: "Password",
+                            hintText: "Enter Password",
+                            hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 40.0,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: MyStyle().primaryColor),
-                    child: FlatButton(
-                        onPressed: () {
-                          print(
-                              "name = $name, user = $user, password = $password, re-password = $confirmpassword");
-                          if ((name?.isEmpty ?? true) ||
-                              (user?.isEmpty ?? true) ||
-                              (password?.isEmpty ?? true) ||
-                              (confirmpassword?.isEmpty ?? true)) {
-                            print("Have Space");
-                            normailDialog(context, "Have Space ? Please Fill");
-                          } else if (file == null) {
-                            normailDialog(context, "Please upload Image");
-                          } else if (password != confirmpassword) {
-                            normailDialog(context, "Password does macth");
-                          } else {
-                            print("No Space");
-                            // checkUser();
-                            checkUser();
-                          }
-                          //Navigator.pop(context);
-                        },
+                    Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 8.0, left: 8.0, right: 8.0),
                         child: Text(
-                          "Create Account",
-                          style: TextStyle(
-                              color: MyStyle().dardkColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal),
+                          "Use 8 or more characters with a mix of letters, numbers & symbols",
+                          style: TextStyle(fontSize: 11.0, color: Colors.grey),
                         )),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
+                      child: Center(
+                          child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        obscureText: statusRedEyeConfirmPassword,
+                        onChanged: (value) => confirmpassword = value.trim(),
+                        validator: (String value) {
+                          if (value.isEmpty) {
+                            return 'Please re-enter password';
+                          }
+                          if (value.length < 8) {
+                            return 'Password must be atleast 8 characters long';
+                          }
+                          if (!RegExp(
+                                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                              .hasMatch(value)) {
+                            return 'Password should contain letters, numbers & symbols';
+                          }
+                          if (password != confirmpassword) {
+                            return "Password does not match";
+                          }
+                          return null;
+                        },
+                        //autofocus: true,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: MyStyle().primaryColor)),
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Icon(
+                                FontAwesomeIcons.lock,
+                                size: 20,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    statusRedEyeConfirmPassword =
+                                        !statusRedEyeConfirmPassword;
+                                  },
+                                );
+                              },
+                              icon: statusRedEyeConfirmPassword
+                                  ? Icon(Icons.remove_red_eye,
+                                      color: Colors.black45)
+                                  : Icon(Icons.remove_red_eye_outlined,
+                                      color: Colors.black45),
+                            ),
+                            labelText: "Re-enter Password",
+                            hintText: "Re-enter Password",
+                            hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w400)),
+                      )),
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: MyStyle().primaryColor),
+                      child: FlatButton(
+                          onPressed: isButtonDisabled == false
+                              ? null
+                              : () {
+                                  print("isButtonDisabled = $isButtonDisabled");
+                                  if (formKey.currentState.validate()) {
+                                    setState(() {
+                                      isButtonDisabled = false;
+                                    });
+                                    
+                                    print(
+                                        "name = $name, user = $user, password = $password, re-password = $confirmpassword");
+
+                                    if (file == null) {
+                                      file = File(
+                                          "/Users/narudolburanakit/Work/Program/Flutter/flutter_sogreat_application/images/avatar.png");
+                                      checkUser();
+                                    } else {
+                                      checkUser();
+                                    }
+                                  }
+                                },
+                          child: Text(
+                            "Create Account",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.normal),
+                          )),
+                    ),
+                  ],
+                ),
               )
             ]),
           )),
@@ -308,23 +412,41 @@ class _SignUpState extends State<SignUp> {
       if (response.toString() == "null") {
         uploadImage();
       } else {
+        setState(() {
+          isButtonDisabled = true;
+        });
+        
         normailDialog(context, "$user Already has a duplicate user");
       }
     } catch (e) {}
   }
 
   Future<Null> registerThred() async {
-    String url =
-        "${MyConstant().domain}/SoGreat/addUser.php?isAdd=true&Name=$name&User=$user&Password=$password&Phone=$phone&Country=$country&Gender=$gender&URLImage=$urlImage&NameGarage=$nameGarage&CarAmount=$carAmount";
+    var encodePassword = Uri.encodeComponent(password);
 
+    // Encrypt //
+    // encryptedPassword = MyEnctyptionDecryption.encryptAES(encodePassword);
+    // print("Encrypt Password = ${encryptedPassword.base64}");
+
+// Decrypt //
+    // var decrytedPassword = MyEnctyptionDecryption.decryptAES(encryptedPassword);
+    // print("Decrypt Password = $decrytedPassword");
+
+    String url =
+        "${MyConstant().domain}/SoGreat/addUser.php?isAdd=true&Name=$name&User=$user&Password=$encodePassword&Phone=$phone&Country=$country&Gender=$gender&URLImage=$urlImage&NameGarage=$nameGarage&CarAmount=$carAmount";
+
+    print("URL: $url");
     try {
-      Response response = await Dio().get(url);
+      Response response = await Dio().post(url);
       print("res = $response");
+      showToast(context, "Create an Account Successful",
+          duration: 4, gravity: Toast.BOTTOM);
 
       if (response.toString() == "true") {
         Navigator.pop(context);
       } else {
-        normailDialog(context, "Can't to Register. Try Again");
+        showToast(context, "Can't to Register. Try Again",
+            duration: 4, gravity: Toast.BOTTOM);
       }
     } catch (e) {}
   }

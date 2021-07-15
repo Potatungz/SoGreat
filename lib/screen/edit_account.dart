@@ -3,9 +3,13 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:country_code_picker/country_code_picker.dart';
+import 'package:country_code_picker/country_localizations.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
+import 'package:flutter_sogreat_application/screen/change_password_screen.dart';
 import 'package:flutter_sogreat_application/screen/home.dart';
 import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
@@ -24,27 +28,33 @@ class EditAccount extends StatefulWidget {
 
 class _EditAccountState extends State<EditAccount> {
   UserModel userModel;
-  String id, nameUser, phone, urlImage;
+  String id;
+  String nameUser = "-";
+  String phone = "-";
+  String urlImage;
+  String nameGarage;
   File file;
 
-  String countryChoose;
-  String genderChoose = "Gender";
+  String gender = "Choose Gender";
+  String country = "Choose Country";
+
+  bool editImage = false;
 
   List<String> listGender = <String>[
-    "Gender",
+    "Choose Gender",
     "Male",
     "Female",
   ];
 
-  List<String> listCounrtry = <String>[
-    "Country",
-    "Thailand",
-    "Combodia",
-    "Malaysia",
-    "Singpore",
-    "England",
-    "Germany",
-  ];
+  // List<String> listCounrtry = <String>[
+  //   "Afghanistan",
+  //   "Aland Islands",
+  //   "Albania",
+  //   "Algeria",
+  //   "American Samoa",
+  //   "Andorra",
+  //   "Thailand",
+  // ];
 
   @override
   void initState() {
@@ -60,8 +70,9 @@ class _EditAccountState extends State<EditAccount> {
     urlImage = preferences.getString("URLImage");
     phone = preferences.getString("Phone");
     id = preferences.getString("id");
-    genderChoose = preferences.getString("Gender");
-    countryChoose = preferences.getString("Country");
+    gender = preferences.getString("Gender");
+    country = preferences.getString("Country");
+    nameGarage = preferences.getString("NameGarage");
 
     String url =
         "${MyConstant().domain}/SoGreat/getUserWhereId.php?isAdd=true&id=$id";
@@ -79,289 +90,276 @@ class _EditAccountState extends State<EditAccount> {
         nameUser = userModel.name;
         urlImage = userModel.urlImage;
         phone = userModel.phone;
-        genderChoose = userModel.gender;
-        countryChoose = userModel.country;
+        gender = userModel.gender;
+        country = userModel.country;
+        nameGarage = userModel.nameGarage;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: Container(
-          padding: EdgeInsets.only(
-            left: 8,
-            top: 20,
-            right: 8,
+    return MaterialApp(
+      supportedLocales: [Locale('en', 'US')],
+      localizationsDelegates: [CountryLocalizations.delegate],
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          elevation: 0,
+          title: Text(
+            "Edit an account",
+            style: TextStyle(color: Colors.black),
           ),
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+            onPressed: () {
+              Navigator.pop(context);
             },
-            child: ListView(children: [
-              Center(
-                child: Text(
-                  "Edit an account",
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+          ),
+        ),
+        body: Container(
+            padding: EdgeInsets.only(
+              left: 8,
+              top: 20,
+              right: 8,
+            ),
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: ListView(children: [
+                // Center(
+                //   child: Text(
+                //     "Edit an account",
+                //     style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+                //   ),
+                // ),
+                // SizedBox(height: 15),
+                Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 146.0,
+                        height: 146.0,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 4,
+                              color: Theme.of(context).scaffoldBackgroundColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipOval(
+                          child: file == null
+                              ? Image.network(
+                                  "${MyConstant().domain}$urlImage",
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(
+                                  file,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 15),
-              Center(
-                child: Stack(
+                TextButton(
+                  child: Text("Change Profile Photo"),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: ((builder) => bottomSheet()));
+                  },
+                ),
+                Divider(
+                  thickness: 1,
+                  height: 20,
+                ),
+                SizedBox(height: 20),
+                Column(
                   children: [
-                    Container(
-                      width: 146.0,
-                      height: 146.0,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 4,
-                            color: Theme.of(context).scaffoldBackgroundColor),
-                        shape: BoxShape.circle,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1.0),
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Center(
+                            child: TextField(
+                          keyboardType: TextInputType.name,
+                          onChanged: (value) => nameUser = value.trim(),
+                          //autofocus: true,
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Icon(
+                                  FontAwesomeIcons.userAlt,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              hintText: "$nameUser",
+                              hintStyle: TextStyle(
+                                  color: Colors.grey, fontSize: 18.0)),
+                        )),
                       ),
-                      child: ClipOval(
-                        child: file == null
-                            ? Image.network(
-                                "${MyConstant().domain}$urlImage",
-                                fit: BoxFit.cover,
-                              )
-                            : Image.file(
-                                file,
-                                fit: BoxFit.cover,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1.0),
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Center(
+                            child: TextField(
+                          keyboardType: TextInputType.phone,
+                          onChanged: (value) => phone = value.trim(),
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Icon(
+                                  FontAwesomeIcons.phoneAlt,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              hintText: phone == "null" ? "Phone" : "$phone",
+                              hintStyle: TextStyle(
+                                  color: Colors.grey, fontSize: 18.0)),
+                        )),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding: EdgeInsets.only(right: 8.0, left: 8.0),
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1.0),
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(right: 8.0, left: 8.0),
+                              child: Icon(
+                                FontAwesomeIcons.genderless,
+                                size: 20,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            DropdownButton<String>(
+                              underline: SizedBox(),
+                              value: gender,
+                              icon: Visibility(
+                                  visible: false,
+                                  child: Icon(Icons.arrow_downward)),
+                              iconSize: 0.0,
+                              elevation: 10,
+                              style: TextStyle(color: Colors.grey),
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  gender = newValue;
+                                });
+                              },
+                              items: listGender.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(
+                                        fontSize: 18.0, color: Colors.black),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Container(
+                        padding: EdgeInsets.only(right: 8.0, left: 8.0),
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey, width: 1.0),
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: CountryCodePicker(
+                                initialSelection: '$country',
+                                textStyle: TextStyle(fontSize: 17.0),
+                                showCountryOnly: true,
+                                showOnlyCountryWhenClosed: true,
+                                showFlag: true,
+                                alignLeft: true,
+                                favorite: ['TH', 'US', 'EN'],
+                                onChanged: (c) {
+                                  setState(() {
+                                    country = c.name;
+                                  });
+                                },
                               ),
                       ),
                     ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  width: 4,
-                                  color: Theme.of(context)
-                                      .scaffoldBackgroundColor),
-                              color: Colors.white),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              size: 18.0,
-                              color: Colors.grey,
-                            ),
-                            onPressed: () {
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: ((builder) => bottomSheet()));
-                              // chooseImage(ImageSource.gallery);
-                            },
-                          )
-                          // child: Icon(Icons.edit, color: Colors.grey),
-                          ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.grey.shade300),
+                      child: FlatButton(
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return ChangePasswordScreen();
+                            })).then((value) => readCurrentInfo());
+                          },
+                          child: Text(
+                            "Change Password",
+                            style: TextStyle(
+                                color: Colors.black26,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal),
+                          )),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: MyStyle().primaryColor),
+                      child: FlatButton(
+                          onPressed: () => confirmDialog(),
+                          child: Text(
+                            "Save",
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal),
+                          )),
                     ),
                   ],
-                ),
-              ),
-              SizedBox(height: 35),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1.0),
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Center(
-                          child: TextField(
-                        keyboardType: TextInputType.name,
-                        onChanged: (value) => nameUser = value.trim(),
-                        //autofocus: true,
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            prefixIcon: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Icon(
-                                FontAwesomeIcons.user,
-                                size: 20,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            hintText: "$nameUser",
-                            hintStyle: TextStyle(color: Colors.grey)),
-                      )),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: 50,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey, width: 1.0),
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Center(
-                          child: TextField(
-                        keyboardType: TextInputType.phone,
-                        onChanged: (value) => phone = value.trim(),
-                        decoration: InputDecoration(
-                            border: InputBorder.none,
-                            prefixIcon: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Icon(
-                                FontAwesomeIcons.lock,
-                                size: 20,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            hintText: phone == "null" ? "Phone" : "$phone",
-                            hintStyle: TextStyle(color: Colors.grey)),
-                      )),
-                    ),
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //     children: <Widget>[
-                  //       Container(
-                  //         padding: EdgeInsets.only(right: 8.0, left: 8.0),
-                  //         width: MediaQuery.of(context).size.width * 0.4,
-                  //         height: 50,
-                  //         decoration: BoxDecoration(
-                  //             border:
-                  //                 Border.all(color: Colors.grey, width: 1.0),
-                  //             color: Colors.white.withOpacity(0.5),
-                  //             borderRadius: BorderRadius.circular(12)),
-                  //         child: Center(
-                  //           child: DropdownButtonHideUnderline(
-                  //             child: ButtonTheme(
-                  //               alignedDropdown: true,
-                  //               child: DropdownButton(
-                  //                 iconSize: 36.0,
-                  //                 icon: Icon(Icons.arrow_drop_down),
-                  //                 isExpanded: false,
-                  //                 elevation: 0,
-                  //                 hint: genderChoose == "null" ||
-                  //                         genderChoose.isEmpty
-                  //                     ? Text(
-                  //                         "Gender",
-                  //                         style: TextStyle(color: Colors.grey),
-                  //                       )
-                  //                     : Text(
-                  //                         "$genderChoose",
-                  //                         style: TextStyle(color: Colors.grey),
-                  //                       ),
-                  //                 value: genderChoose,
-                  //                 items: listGender.map((valueItem) {
-                  //                   return DropdownMenuItem(
-                  //                     value: valueItem,
-                  //                     child: Text(
-                  //                       valueItem,
-                  //                       style: TextStyle(color: Colors.grey),
-                  //                     ),
-                  //                   );
-                  //                 }).toList(),
-                  //                 onChanged: (newValue) {
-                  //                   setState(
-                  //                     () {
-                  //                       genderChoose = newValue;
-                  //                     },
-                  //                   );
-                  //                 },
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       Container(
-                  //         padding: EdgeInsets.only(right: 8.0, left: 8.0),
-                  //         width: MediaQuery.of(context).size.width * 0.4,
-                  //         height: 50,
-                  //         decoration: BoxDecoration(
-                  //             border:
-                  //                 Border.all(color: Colors.grey, width: 1.0),
-                  //             color: Colors.white.withOpacity(0.5),
-                  //             borderRadius: BorderRadius.circular(12)),
-                  //         child: Center(
-                  //           child: DropdownButtonHideUnderline(
-                  //             child: ButtonTheme(
-                  //               alignedDropdown: false,
-                  //               child: DropdownButton(
-                  //                   iconSize: 36.0,
-                  //                   icon: Icon(Icons.arrow_drop_down),
-                  //                   isExpanded: true,
-                  //                   elevation: 0,
-                  //                   hint: countryChoose == "null" ||
-                  //                           countryChoose.isEmpty
-                  //                       ? Text(
-                  //                           "Country",
-                  //                           style:
-                  //                               TextStyle(color: Colors.grey),
-                  //                         )
-                  //                       : Text(
-                  //                           "$countryChoose",
-                  //                           style:
-                  //                               TextStyle(color: Colors.grey),
-                  //                         ),
-                  //                   value: countryChoose,
-                  //                   items: listCounrtry.map((valueItem) {
-                  //                     return DropdownMenuItem(
-                  //                       value: valueItem,
-                  //                       child: Text(
-                  //                         valueItem,
-                  //                         style: TextStyle(color: Colors.grey),
-                  //                       ),
-                  //                     );
-                  //                   }).toList(),
-                  //                   onChanged: (newValue) {
-                  //                     setState(() {
-                  //                       countryChoose = newValue;
-                  //                     });
-                  //                   }),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  SizedBox(
-                    height: 40.0,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.85,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: MyStyle().primaryColor),
-                    child: FlatButton(
-                        onPressed: () => confirmDialog(),
-                        child: Text(
-                          "Save",
-                          style: TextStyle(
-                              color: MyStyle().dardkColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.normal),
-                        )),
-                  ),
-                ],
-              )
-            ]),
-          )),
+                )
+              ]),
+            )),
+      ),
     );
   }
 
@@ -374,6 +372,7 @@ class _EditAccountState extends State<EditAccount> {
       );
       setState(() {
         file = File(object.path);
+        editImage = true;
         Navigator.pop(context);
       });
     } catch (e) {}
@@ -381,22 +380,29 @@ class _EditAccountState extends State<EditAccount> {
 
   Future<Null> confirmDialog() async {
     showDialog(
-        context: context,
-        builder: (context) =>
-            SimpleDialog(title: Text("Edit account ?"), children: <Widget>[
-              OutlineButton(
-                onPressed: () {
-                  print("Edit Data");
-                  Navigator.pop(context);
-                  editThread();
-                },
-                child: Text("Sure?"),
-              ),
-              OutlinedButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("ไม่แน่ใจ"),
-              ),
-            ]));
+      context: context,
+      builder: (_) => new CupertinoAlertDialog(
+        title: new Text("Edit Account"),
+        content: new Text("Your account will be edit now?"),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
+          FlatButton(
+              onPressed: () async {
+                print("Edit Data");
+                Navigator.pop(context);
+                editThread();
+              },
+              child: Text("OK"))
+        ],
+      ),
+    );
   }
 
   Widget bottomSheet() {
@@ -437,23 +443,41 @@ class _EditAccountState extends State<EditAccount> {
 
   Future<Null> editThread() async {
     print("editThred");
-    Random random = Random();
-    int i = random.nextInt(100000);
-    String nameFile = "editProfile$i.jpg";
+    print("editImage => $editImage");
+    if (editImage) {
+      Random random = Random();
+      int i = random.nextInt(100000);
+      String nameFile = "editProfile$i.jpg";
 
-    Map<String, dynamic> map = Map();
-    map["file"] = await MultipartFile.fromFile(file.path, filename: nameFile);
-    FormData formData = FormData.fromMap(map);
+      Map<String, dynamic> map = Map();
+      map["file"] = await MultipartFile.fromFile(file.path, filename: nameFile);
+      FormData formData = FormData.fromMap(map);
 
-    String urlUpload = "${MyConstant().domain}/SoGreat/saveProfile.php";
-    await Dio().post(urlUpload, data: formData).then((value) async {
-      urlImage = "/SoGreat/Profile/$nameFile";
+      String urlUpload = "${MyConstant().domain}/SoGreat/saveProfile.php";
+      await Dio().post(urlUpload, data: formData).then((value) async {
+        urlImage = "/SoGreat/Profile/$nameFile";
 
+        String id = userModel.id;
+        print("gender $gender");
+        print("gender $country");
+        String url =
+            "${MyConstant().domain}/SoGreat/editUserWhereId.php?isAdd=true&id=$id&Name=$nameUser&Phone=$phone&URLImage=$urlImage&Gender=$gender&Country=$country&NameGarage=$nameGarage";
+        print("See URL = $url");
+        Response response = await Dio().get(url);
+        if (response.toString() == "true") {
+          Navigator.pop(context);
+        } else {
+          print("Updagte Fail");
+          normailDialog(context, "Update Fail");
+        }
+      });
+    } else {
       String id = userModel.id;
-
+      urlImage = userModel.urlImage;
+      print("gender $gender");
+      print("country $country");
       String url =
-          "${MyConstant().domain}/SoGreat/editUserWhereId.php?isAdd=true&id=$id&Name=$nameUser&Phone=$phone&URLImage=$urlImage&Gender=$genderChoose&Country=$countryChoose";
-
+          "${MyConstant().domain}/SoGreat/editUserWhereId.php?isAdd=true&id=$id&Name=$nameUser&Phone=$phone&URLImage=$urlImage&Gender=$gender&Country=$country&NameGarage=$nameGarage";
       Response response = await Dio().get(url);
       if (response.toString() == "true") {
         Navigator.pop(context);
@@ -461,6 +485,6 @@ class _EditAccountState extends State<EditAccount> {
         print("Updagte Fail");
         normailDialog(context, "Update Fail");
       }
-    });
+    }
   }
 }

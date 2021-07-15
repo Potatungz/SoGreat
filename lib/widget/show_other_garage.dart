@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/model/car_model.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/screen/show_detail_other_car_screen.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ShowOtherGarage extends StatefulWidget {
    final UserModel userModel;
@@ -75,19 +77,37 @@ class _ShowOtherGarageState extends State<ShowOtherGarage> {
 
   @override
   Widget build(BuildContext context) {
-    return myCarCards.length == 0
-        ? MyStyle().showProgress()
+   return myCarCards.length == 0
+        ? Center(
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(20.0),
+                width: MediaQuery.of(context).size.width * 0.3,
+                child: Icon(
+                  FontAwesomeIcons.carAlt,
+                  size: 80,
+                  color: Colors.white70,
+                ),
+              ),
+              FittedBox(
+                child: Text(
+                  "There are no car in the garage",
+                  style: MyStyle().mainH3Title,
+                ),)
+            ],
+          ))
         : GridView.extent(
-            maxCrossAxisExtent: 210.0,
-            mainAxisSpacing: 20.0,
-            crossAxisSpacing: 20.0,
+            maxCrossAxisExtent: 220.0,
+            mainAxisSpacing: 10.0,
+            crossAxisSpacing: 10.0,
             children: myCarCards,
           );
   }
-
   createCard(MyGarageModel myGarageModel, int index) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         print("Tap to Index = $index");
         print("Tap to Car ID :${myGarageModels[index].idCar}");
         MaterialPageRoute route = MaterialPageRoute(
@@ -106,7 +126,7 @@ class _ShowOtherGarageState extends State<ShowOtherGarage> {
             Expanded(
               flex: 4,
               child: Container(
-                  height: 150.0,
+                  // height: MediaQuery.of(context).size.height*0.2,
                   color: Colors.transparent,
                   child: Image.network(
                     "${MyConstant().domain}${myGarageModel.pathImage}",
@@ -115,11 +135,11 @@ class _ShowOtherGarageState extends State<ShowOtherGarage> {
             ),
             // SizedBox(height: 10.0),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Container(
                 margin: EdgeInsets.only(left: 5, right: 5),
                 width: 200.0,
-                child: MyStyle().showTitleH3White("${myGarageModel.modelCar}"),
+                child: AutoSizeText("${myGarageModel.modelCar}",style: TextStyle(color: Colors.white, fontSize:12.0),textAlign: TextAlign.center,maxLines: 2,),
               ),
             ),
             // SizedBox(height: 10.0),

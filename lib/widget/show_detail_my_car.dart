@@ -9,11 +9,14 @@ import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/image_gallery_model.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
+import 'package:flutter_sogreat_application/screen/home.dart';
+import 'package:flutter_sogreat_application/screen/my_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/showroom_screen.dart';
 import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
 import 'package:flutter_sogreat_application/utility/sqlite_helper.dart';
+import 'package:flutter_sogreat_application/widget/show_my_garage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowDetailMyCar extends StatefulWidget {
@@ -78,87 +81,88 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
     setState(() {
       print("Show Car Animated");
       showCar = true;
+
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-            child: Stack(children: <Widget>[
-              Container(
-                height: 340.0,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("images/bg_showroom.png"),
-                        fit: BoxFit.cover)),
-              ),
-              AnimatedPositioned(
-                duration: Duration(
-                  milliseconds: 1000,
-                ),
-                bottom: showCar ? 450 : 550,
-                top: showCar ? 110 : 110,
-                right: showCar ? 0 : -200,
-                left: showCar ? 0 : 600,
-                child: Container(
-                  // height: 340,
-                  color: Colors.transparent,
-                  child: Container(
-                      // margin: EdgeInsets.all(50.0),
+      child: Stack(
+        children: <Widget>[
+          Container(
+            height: 340.0,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("images/garage.png"), fit: BoxFit.cover)),
+          ),
+          AnimatedPositioned(
+            duration: Duration(
+              milliseconds: 1000,
+            ),
+            bottom: showCar ? 450 : 550,
+            top: showCar ? 110 : 110,
+            right: showCar ? 0 : -200,
+            left: showCar ? 0 : 600,
+            child: Container(
+              // height: 340,
+              color: Colors.transparent,
+              child: Container(
+                  // margin: EdgeInsets.all(50.0),
+                  decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage("${MyConstant().domain}$pathImage"),
+                    fit: BoxFit.cover),
+              )),
+            ),
+          ),
+          Column(
+            children: [
+              Row(
+                children: [
+                  Opacity(
+                    opacity: 0.9,
+                    child: ShaderMask(
+                      shaderCallback: (rect) => LinearGradient(
+                              begin: Alignment.center,
+                              end: Alignment.centerLeft,
+                              colors: [Colors.black, Colors.transparent])
+                          .createShader(rect),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: 60.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    height: 60.0,
+                    color: Color(0xfff1f1f1),
+                    child: Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
+                            // image: AssetImage("images/logo.png")),
                             image: NetworkImage(
-                                "${MyConstant().domain}$pathImage"),
-                            fit: BoxFit.cover),
-                      )),
-                ),
-              ),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Opacity(
-                        opacity: 0.9,
-                        child: ShaderMask(
-                          shaderCallback: (rect) => LinearGradient(
-                                  begin: Alignment.center,
-                                  end: Alignment.centerLeft,
-                                  colors: [Colors.black, Colors.transparent])
-                              .createShader(rect),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            height: 60.0,
-                            color: Colors.black,
-                          ),
-                        ),
+                          "${MyConstant().domain}$brandImage",
+                        )),
                       ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.2,
-                        height: 60.0,
-                        color: Color(0xfff1f1f1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                                // image: AssetImage("images/logo.png")),
-                                image: NetworkImage(
-                              "${MyConstant().domain}$brandImage",
-                            )),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 280.0),
-                  buildCarDetail(),
-                  myCarInGarage(),
-                  SizedBox(height: 20.0),
-                  buildAddButton(context),
-                  SizedBox(height: 20.0),
+                    ),
+                  )
                 ],
               ),
-              buildTitle(context),
-            ]),
-          );
+              SizedBox(height: 280.0),
+              buildCarDetail(),
+              myCarInGarage(),
+              SizedBox(height: 20.0),
+              buildAddButton(context),
+              SizedBox(height: 20.0),
+            ],
+          ),
+          buildTitle(context),
+        ],
+      ),
+    );
   }
 
   Container buildAddButton(BuildContext context) {
@@ -214,7 +218,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   "Acceleration",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -223,7 +227,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   "3.6 Sec",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -247,7 +251,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   "Horsepower",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -256,7 +260,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   "550 HP",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -280,7 +284,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   "Torque",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 11.0,
+                      fontSize: 10.0,
                       color: Colors.black26),
                   textAlign: TextAlign.start,
                 ),
@@ -289,7 +293,7 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
                   "502 ib-ft",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
+                      fontSize: 20.0,
                       color: Colors.black),
                   textAlign: TextAlign.start,
                 ),
@@ -360,44 +364,46 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
   Future<Null> deleteCarFromGarage(
       MyGarageModel myGarageModel, int index) async {
     showDialog(
-        context: context,
-        builder: (_) => new CupertinoAlertDialog(
-              title: new Text("Move to Your Garage?"),
-              content: new Text("Car in your garage will be delete now?"),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )),
-                FlatButton(
-                    onPressed: () async {
-                      String id = myGarageModel.id;
-                      print("Delete Car id = $id");
-                      String urlDeleteCar =
-                          "${MyConstant().domain}/SoGreat/deleteCarWhereIdGarage.php?isAdd=true&id=$id";
-                      try {
-                        Response response = await Dio().get(urlDeleteCar);
-                        print("res = $response");
+      context: context,
+      builder: (_) => new CupertinoAlertDialog(
+        title: new Text("Move to Your Garage?"),
+        content: new Text("Car in your garage will be delete now?"),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
+          FlatButton(
+              onPressed: () async {
+                String id = myGarageModel.id;
+                print("Delete Car id = $id");
+                String urlDeleteCar =
+                    "${MyConstant().domain}/SoGreat/deleteCarWhereIdGarage.php?isAdd=true&id=$id";
+                try {
+                  Response response = await Dio().get(urlDeleteCar);
+                  print("res = $response");
 
-                        if (response.toString() == "true") {
-                          setState(() {
-                            mygarageModels.removeAt(index);
-                          });
-                          print("Delete Success");
-                          updateCarAmount();
-                          // Navigator.of(context).pop();
-                        } else {
-                          normailDialog(context, "Can't Delete Car. Try Again");
-                        }
-                      } catch (e) {}
-                    },
-                    child: Text("Move"))
-              ],
-            ));
+                  if (response.toString() == "true") {
+                    setState(() {
+                      mygarageModels.removeAt(index);
+                    });
+                    print("Delete Success");
+                    updateCarAmount();
+                    selectCar(myGarageModel, index);
+                    // Navigator.of(context).pop();
+                  } else {
+                    normailDialog(context, "Can't Delete Car. Try Again");
+                  }
+                } catch (e) {}
+              },
+              child: Text("Move"))
+        ],
+      ),
+    );
   }
 
   Future<Null> updateCarAmount() async {
@@ -412,13 +418,20 @@ class _ShowDetailMyCarState extends State<ShowDetailMyCar> {
       if (response.toString() == "true") {
         print("Car Amount Now!! = $carAmount");
         Navigator.pop(context);
+        if (carAmount <= 0) {
+           MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) => MyGarageScreen(),
+              );
+              Navigator.push(context, route);
+        }
+
       }
     } catch (e) {}
   }
 
   Future<Null> selectCar(MyGarageModel myGarageModel, int index) async {
     setState(() {
-      print(
+        print(
           "select Car id = ${myGarageModel.id} and Car Model = ${myGarageModel.modelCar}");
       modelCar = mygarageModels[index].modelCar;
       pathImage = mygarageModels[index].pathImage;

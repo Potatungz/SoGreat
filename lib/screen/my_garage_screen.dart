@@ -10,7 +10,7 @@ class MyGarageScreen extends StatefulWidget {
   final UserModel userModel;
   MyGarageScreen({
     Key key,
-    this.userModel,
+    this.userModel, myGarageModel,
   }) : super(key: key);
 
   @override

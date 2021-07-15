@@ -2,24 +2,55 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sogreat_application/model/garage_model.dart';
-import 'package:flutter_sogreat_application/model/showroom_model.dart';
+import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/screen/showroom_screen.dart';
 import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'home.dart';
 
 class BuildGarageScreen extends StatefulWidget {
+  final UserModel userModel;
+  BuildGarageScreen({Key key, this.userModel}) : super(key: key);
   @override
   _BuildGarageScreenState createState() => _BuildGarageScreenState();
 }
 
 class _BuildGarageScreenState extends State<BuildGarageScreen> {
   String idUser, nameGarage;
+  UserModel userModel;
+
+  @override
+  void initState() {
+    super.initState();
+    userModel = widget.userModel;
+    readGarageName();
+  }
+
+  Future<Null> readGarageName() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    nameGarage = preferences.getString("NameGarage");
+    idUser = preferences.getString("id");
+
+    String url =
+        "${MyConstant().domain}/SoGreat/getUserWhereId.php?isAdd=true&id=$idUser";
+
+    Response response = await Dio().get(url);
+    print("response ===>> $response");
+
+    var result = json.decode(response.data);
+    print("result ===>> $result");
+
+    for (var map in result) {
+      print("map ==>> $map");
+      setState(() {
+        userModel = UserModel.fromJson(map);
+        nameGarage = userModel.nameGarage;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var pageSize = MediaQuery.of(context).size.height;
@@ -62,11 +93,14 @@ class _BuildGarageScreenState extends State<BuildGarageScreen> {
                             borderRadius: BorderRadius.circular(12)),
                         child: Center(
                             child: TextField(
+                          keyboardType: TextInputType.name,
                           onChanged: (value) => nameGarage = value.trim(),
                           autofocus: true,
                           decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: "Enter Your Garage Name",
+                              hintText: nameGarage == ""
+                                  ? "Enter Your Garage Name"
+                                  : "$nameGarage",
                               hintStyle: TextStyle(color: Colors.grey)),
                         )),
                       ),
@@ -157,13 +191,12 @@ class _BuildGarageScreenState extends State<BuildGarageScreen> {
       print("res = $response");
 
       if (response.toString() == "true") {
-        MaterialPageRoute route = MaterialPageRoute(builder: (context) => ShowRoomScreen());
+        MaterialPageRoute route =
+            MaterialPageRoute(builder: (context) => ShowRoomScreen());
         Navigator.pushAndRemoveUntil(context, route, (route) => false);
       } else {
         normailDialog(context, "Can't to Create Garage. Try Again");
       }
     } catch (e) {}
-
   }
-
 }

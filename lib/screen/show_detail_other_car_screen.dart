@@ -1,15 +1,21 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/model/car_model.dart';
 import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/my_garage_model.dart';
 import 'package:flutter_sogreat_application/model/showroom_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
+import 'package:flutter_sogreat_application/screen/home.dart';
+import 'package:flutter_sogreat_application/utility/my_constant.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
 import 'package:flutter_sogreat_application/widget/show_detail_other_car.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowDetailOtherCarScreen extends StatefulWidget {
   final UserModel userModel;
-    final CarModel carModel;
+  final CarModel carModel;
   final GarageModel garageModel;
   final MyGarageModel myGarageModel;
   ShowDetailOtherCarScreen(
@@ -20,19 +26,20 @@ class ShowDetailOtherCarScreen extends StatefulWidget {
       this.myGarageModel})
       : super(key: key);
   @override
-  _ShowDetailOtherCarScreenState createState() => _ShowDetailOtherCarScreenState();
+  _ShowDetailOtherCarScreenState createState() =>
+      _ShowDetailOtherCarScreenState();
 }
 
 class _ShowDetailOtherCarScreenState extends State<ShowDetailOtherCarScreen> {
-   String modelName, urlImage, carDetail;
-   UserModel userModel;
+  String modelName, urlImage, carDetail;
+  String nameGarage;
+  UserModel userModel;
   CarModel carModel;
   ShowroomModel showroomModel;
   GarageModel garageModel;
   MyGarageModel myGarageModel;
   Widget detailWidget;
   String idShowroom;
-
 
   @override
   void initState() {
@@ -65,6 +72,20 @@ class _ShowDetailOtherCarScreenState extends State<ShowDetailOtherCarScreen> {
                 Navigator.pop(context);
               },
             ),
+            actions: [
+              IconButton(
+                  icon: Icon(
+                    Icons.home_rounded,
+                    color: MyStyle().primaryColor,
+                  ),
+                  onPressed: () {
+                    print("Back to homescreen");
+                    MaterialPageRoute route = MaterialPageRoute(
+                      builder: (context) => Home(),
+                    );
+                    Navigator.push(context, route);
+                  }),
+            ],
           ),
           body: detailWidget,
         ),

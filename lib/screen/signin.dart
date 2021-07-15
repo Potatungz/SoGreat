@@ -1,16 +1,20 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sogreat_application/model/garage_model.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/screen/home.dart';
 import 'package:flutter_sogreat_application/screen/signup.dart';
 import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
+import 'package:flutter_sogreat_application/utility/my_encryption.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
+import 'package:flutter_sogreat_application/utility/show_toast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class SignIn extends StatefulWidget {
   @override
@@ -18,6 +22,14 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  final formKey = GlobalKey<FormState>();
+  String recoverEmail;
+  String newPassWord;
+
+  var decryptedPassword;
+
+  bool isButtonDisabled = true;
+
   @override
   void initState() {
     super.initState();
@@ -72,42 +84,45 @@ class _SignInState extends State<SignIn> {
                   children: <Widget>[
                     Container(
                       width: MediaQuery.of(context).size.width * 0.7,
+                      height: MediaQuery.of(context).size.height * 0.15,
                       child: Image.asset("images/logo.png"),
                     ),
                     SizedBox(
-                      height: 80.0,
+                      height: MediaQuery.of(context).size.height * 0.1,
                     ),
                     Container(
                       padding: EdgeInsets.all(8.0),
                       height: 60.0,
                       width: MediaQuery.of(context).size.width * 0.85,
                       decoration: BoxDecoration(
-                        color: Colors.grey[500].withOpacity(0.5),
+                        color: Colors.grey[500].withOpacity(0.3),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: TextField(
+                      child: TextFormField(
                         onChanged: (value) => user = value.trim(),
                         style: MyStyle().mainBody1,
                         cursorColor: Colors.white,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          prefixIcon: Icon(FontAwesomeIcons.user,
+                          prefixIcon: Icon(FontAwesomeIcons.solidEnvelope,
                               size: 20.0, color: Colors.white),
-                          hintText: "Username",
-                          hintStyle: MyStyle().mainBody1,
+                          hintText: "example@domain.com",
+                          hintStyle: TextStyle(color: Colors.white70),
                         ),
                       ),
                     ),
-                    SizedBox(height: 20.0),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
                     Container(
                       padding: EdgeInsets.all(8.0),
                       height: 60.0,
                       width: MediaQuery.of(context).size.width * 0.85,
                       decoration: BoxDecoration(
-                        color: Colors.grey[500].withOpacity(0.5),
+                        color: Colors.grey[500].withOpacity(0.3),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: TextField(
+                      child: TextFormField(
                         onChanged: (value) => password = value.trim(),
                         obscureText: statusRedEye,
                         style: MyStyle().mainBody1,
@@ -119,8 +134,8 @@ class _SignInState extends State<SignIn> {
                               size: 20.0,
                               color: Colors.white,
                             ),
-                            hintText: "Password",
-                            hintStyle: MyStyle().mainBody1,
+                            hintText: "Enter your password",
+                            hintStyle: TextStyle(color: Colors.white70),
                             suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
@@ -135,11 +150,135 @@ class _SignInState extends State<SignIn> {
                                   : Icon(Icons.remove_red_eye_outlined,
                                       color: Colors.white),
                             )),
-                        keyboardType: TextInputType.name,
+                        keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.done,
                       ),
                     ),
-                    SizedBox(height: 20.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(right: 20.0),
+                          child: TextButton(
+                            child: Text(
+                              "Forgot Password",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => SimpleDialog(
+                                  titlePadding: EdgeInsets.only(
+                                    left: 20.0,
+                                    top: 30.0,
+                                    right: 20.0,
+                                  ),
+                                  title: Text(
+                                    "We will send your password to this email account.",
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  contentPadding: EdgeInsets.only(
+                                      left: 20.0,
+                                      top: 20.0,
+                                      right: 20.0,
+                                      bottom: 20.0),
+                                  children: [
+                                    Form(
+                                      key: formKey,
+                                      child: Center(
+                                        child: TextFormField(
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          validator: (String value) {
+                                            if (value.isEmpty) {
+                                              return 'Please a Enter';
+                                            }
+                                            if (!RegExp(
+                                                    "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+                                                .hasMatch(value)) {
+                                              return 'Please a valid Email';
+                                            }
+                                            return null;
+                                          },
+                                          onChanged: (value) =>
+                                              recoverEmail = value.trim(),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12)),
+                                              focusedBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  borderSide: BorderSide(
+                                                      color: MyStyle()
+                                                          .primaryColor)),
+                                              labelText: "Email",
+                                              hintText: "Enter Your Email",
+                                              prefixIcon: Icon(Icons.email)),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 20.0),
+                                    Container(
+                                      height: 50.0,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.85,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: MyStyle().primaryColor),
+                                      child: FlatButton(
+                                        onPressed: () {
+                                          print(
+                                              "isButtonDisable = $isButtonDisabled");
+                                          if (isButtonDisabled) {
+                                            if (formKey.currentState
+                                                .validate()) {
+                                              setState(() {
+                                                isButtonDisabled = false;
+                                              });
+                                              print(
+                                                  "isButtonDisable = $isButtonDisabled");
+                                              checkEmail();
+                                            }
+                                          }
+                                        },
+                                        child: Text(
+                                          "Reset Password",
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5.0),
+                                    Container(
+                                      height: 50.0,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.85,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text(
+                                          "Back",
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.03,
+                    ),
                     Container(
                       height: 60.0,
                       width: MediaQuery.of(context).size.width * 0.85,
@@ -165,21 +304,35 @@ class _SignInState extends State<SignIn> {
                         },
                       ),
                     ),
-                    SizedBox(height: 20.0),
-                    Container(
-                      child: FlatButton(
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return SignUp();
-                          }));
-                        },
-                        child: Text(
-                          "Create New Account",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    )
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.01,
+                    ),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            "Don't have an account ?",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Container(
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return SignUp();
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "SignUp",
+                                style: TextStyle(color: MyStyle().primaryColor),
+                              ),
+                            ),
+                          ),
+                        ])
                   ],
                 ),
               )),
@@ -188,9 +341,74 @@ class _SignInState extends State<SignIn> {
     );
   }
 
+  Future resetPassword() async {
+    user = recoverEmail;
+    print("recovery email = $user");
+    String url =
+        "${MyConstant().domain}/SoGreat/resetPassword.php?isAdd=true&User=$user";
+    print("url = $url");
+
+    try {
+      showToast(context, "Send new password to email : $user",
+          duration: 4, gravity: Toast.BOTTOM);
+      Response response = await Dio().get(url);
+      print("res ===> ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        setState(() {
+          isButtonDisabled = true;
+        });
+        Navigator.of(context).pop();
+      } else {
+        print("Reset Password Fail");
+        setState(() {
+          isButtonDisabled = true;
+        });
+        
+        showToast(context, "Reset Password failed",
+            duration: 4, gravity: Toast.BOTTOM);
+      }
+    } catch (e) {}
+  }
+
+  Future<Null> checkEmail() async {
+    user = recoverEmail;
+    String url =
+        "${MyConstant().domain}/SoGreat/getUserWhereUser.php?isAdd=true&User=$user";
+    try {
+      Response response = await Dio().get(url);
+      print("res = $response");
+
+      var result = json.decode(response.data);
+      print("result = $result");
+      if (result == null) {
+        setState(() {
+          isButtonDisabled = true;
+        });
+        showToast(context, "Invalid this email address",
+            duration: 4, gravity: Toast.BOTTOM);
+      } else {
+        for (var map in result) {
+          UserModel userModel = UserModel.fromJson(map);
+
+          if (recoverEmail == userModel.user) {
+            resetPassword();
+          } else {
+            setState(() {
+              isButtonDisabled = true;
+            });
+            showToast(context, "Invalid this email address",
+                duration: 4, gravity: Toast.BOTTOM);
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
   Future<Null> checkAuthen() async {
     String url =
         "${MyConstant().domain}/SoGreat/getUserWhereUser.php?isAdd=true&User=$user";
+
     try {
       Response response = await Dio().get(url);
       print("res = $response");
@@ -200,7 +418,6 @@ class _SignInState extends State<SignIn> {
 
       for (var map in result) {
         UserModel userModel = UserModel.fromJson(map);
-
         if (password == userModel.password) {
           routeToService(Home(), userModel);
         } else {
