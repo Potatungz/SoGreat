@@ -1,17 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_sogreat_application/utility/dialog.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
-import 'package:flutter_sogreat_application/utility/my_encryption.dart';
 import 'package:flutter_sogreat_application/utility/my_style.dart';
 import 'package:flutter_sogreat_application/utility/show_toast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:path_provider/path_provider.dart';
 import 'package:toast/toast.dart';
 
 class SignUp extends StatefulWidget {
@@ -28,8 +30,6 @@ class _SignUpState extends State<SignUp> {
   String country = "Choose Country";
   String nameGarage = "";
   String carAmount = "0";
-
-  var encryptedPassword;
 
   bool statusRedEyeNewPassword = true;
   bool statusRedEyeConfirmPassword = true;
@@ -83,7 +83,7 @@ class _SignUpState extends State<SignUp> {
                       child: ClipOval(
                           child: file == null
                               ? Image.asset(
-                                  "images/avatar_blank.png",
+                                  "images/avatar.png",
                                   fit: BoxFit.cover,
                                 )
                               : Image.file(
@@ -218,8 +218,13 @@ class _SignUpState extends State<SignUp> {
                             }
                             // return null;
 
+                            // if (!RegExp(
+                            //         r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~^]).{8,}$')
+                            //     .hasMatch(value)) {
+                            //   return 'Password should contain letters, numbers & symbols';
+                            // }
                             if (!RegExp(
-                                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[~@#$%^&*+=`|{}:;!.,?_\\\"()\[\]\/-\<\>]).{8,}$')
                                 .hasMatch(value)) {
                               return 'Password should contain letters, numbers & symbols';
                             }
@@ -288,7 +293,7 @@ class _SignUpState extends State<SignUp> {
                             return 'Password must be atleast 8 characters long';
                           }
                           if (!RegExp(
-                                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[~@#$%^&*+=`|{}:;!.,?_\\\"()\[\]\/-\<\>]).{8,}$')
                               .hasMatch(value)) {
                             return 'Password should contain letters, numbers & symbols';
                           }
@@ -348,23 +353,31 @@ class _SignUpState extends State<SignUp> {
                       child: FlatButton(
                           onPressed: isButtonDisabled == false
                               ? null
-                              : () {
+                              : () async {
                                   print("isButtonDisabled = $isButtonDisabled");
                                   if (formKey.currentState.validate()) {
                                     setState(() {
                                       isButtonDisabled = false;
                                     });
-                                    
-                                    print(
-                                        "name = $name, user = $user, password = $password, re-password = $confirmpassword");
 
                                     if (file == null) {
+                                      final byteData = await rootBundle
+                                          .load('images/avatar.png');
+                                      print(byteData);
+
                                       file = File(
-                                          "/Users/narudolburanakit/Work/Program/Flutter/flutter_sogreat_application/images/avatar.png");
-                                      checkUser();
-                                    } else {
-                                      checkUser();
+                                          '${(await getApplicationDocumentsDirectory()).path}/$byteData');
+                                      print("2222");
+
+                                      await file.writeAsBytes(
+                                          byteData.buffer.asUint8List());
+                                      print("333");
+                                      setState(() {
+                                        file = File(file.path);
+                                      });
+                                      print("file = ${file.path}");
                                     }
+                                    checkUser();
                                   }
                                 },
                           child: Text(
@@ -415,23 +428,17 @@ class _SignUpState extends State<SignUp> {
         setState(() {
           isButtonDisabled = true;
         });
-        
+
         normailDialog(context, "$user Already has a duplicate user");
       }
     } catch (e) {}
   }
 
   Future<Null> registerThred() async {
-    var encodePassword = Uri.encodeComponent(password);
-
-    // Encrypt //
-    // encryptedPassword = MyEnctyptionDecryption.encryptAES(encodePassword);
-    // print("Encrypt Password = ${encryptedPassword.base64}");
-
-// Decrypt //
-    // var decrytedPassword = MyEnctyptionDecryption.decryptAES(encryptedPassword);
-    // print("Decrypt Password = $decrytedPassword");
-
+    // var encodePassword = Uri.encodeComponent(password);
+    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+    String encodePassword = stringToBase64.encode(password);
+    print("Encode = $encodePassword");
     String url =
         "${MyConstant().domain}/SoGreat/addUser.php?isAdd=true&Name=$name&User=$user&Password=$encodePassword&Phone=$phone&Country=$country&Gender=$gender&URLImage=$urlImage&NameGarage=$nameGarage&CarAmount=$carAmount";
 

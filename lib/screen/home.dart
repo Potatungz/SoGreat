@@ -8,10 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sogreat_application/model/user_model.dart';
 import 'package:flutter_sogreat_application/screen/build_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/edit_account.dart';
-import 'package:flutter_sogreat_application/screen/find_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/my_garage_screen.dart';
 import 'package:flutter_sogreat_application/screen/search_garage_screen.dart';
-import 'package:flutter_sogreat_application/screen/show_list_showroom_all.dart';
 import 'package:flutter_sogreat_application/screen/showroom_screen.dart';
 import 'package:flutter_sogreat_application/screen/signin.dart';
 import 'package:flutter_sogreat_application/utility/my_constant.dart';
@@ -598,7 +596,7 @@ class _HomeState extends State<Home> {
                       shape: BoxShape.circle,
                     ),
                     child: ClipOval(
-                        child: urlImage == null
+                        child: urlImage == ""
                             ? Image.asset(
                                 "images/avatar_blank.png",
                                 fit: BoxFit.cover,
@@ -609,11 +607,6 @@ class _HomeState extends State<Home> {
                                 fit: BoxFit.cover,
                               )),
                   ),
-                  // CircleAvatar(
-                  //   backgroundColor: Colors.grey,
-                  //   radius: 60.0,
-                  //   child: Text('Image'),
-                  // ),
                   SizedBox(height: 10.0),
                   Text(nameUser == null ? "Guest" : "$nameUser",
                       style: TextStyle(

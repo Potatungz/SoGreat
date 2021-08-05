@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -344,6 +345,7 @@ class _SignInState extends State<SignIn> {
   Future resetPassword() async {
     user = recoverEmail;
     print("recovery email = $user");
+
     String url =
         "${MyConstant().domain}/SoGreat/resetPassword.php?isAdd=true&User=$user";
     print("url = $url");
@@ -364,7 +366,7 @@ class _SignInState extends State<SignIn> {
         setState(() {
           isButtonDisabled = true;
         });
-        
+
         showToast(context, "Reset Password failed",
             duration: 4, gravity: Toast.BOTTOM);
       }
@@ -372,15 +374,15 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<Null> checkEmail() async {
+    print("Check Email");
     user = recoverEmail;
     String url =
         "${MyConstant().domain}/SoGreat/getUserWhereUser.php?isAdd=true&User=$user";
     try {
       Response response = await Dio().get(url);
-      print("res = $response");
 
       var result = json.decode(response.data);
-      print("result = $result");
+
       if (result == null) {
         setState(() {
           isButtonDisabled = true;
@@ -406,6 +408,7 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<Null> checkAuthen() async {
+    print("Check Authen");
     String url =
         "${MyConstant().domain}/SoGreat/getUserWhereUser.php?isAdd=true&User=$user";
 
@@ -415,13 +418,28 @@ class _SignInState extends State<SignIn> {
 
       var result = json.decode(response.data);
       print("result = $result");
-
-      for (var map in result) {
-        UserModel userModel = UserModel.fromJson(map);
-        if (password == userModel.password) {
-          routeToService(Home(), userModel);
-        } else {
-          normailDialog(context, "Wrong!! Password. Try again.");
+      if (result == null) {
+        normailDialog(context, "Wrong!! Username. Please Try again.");
+      } else {
+        for (var map in result) {
+          UserModel userModel = UserModel.fromJson(map);
+          if (password != userModel.password) {
+            Codec<String, String> stringToBase64 = utf8.fuse(base64);
+            String decodePassword = stringToBase64.decode(userModel.password);
+            print("Decode : $decodePassword");
+            print("Pass Form Database = ${userModel.password}");
+            if (password == decodePassword || password == userModel.password) {
+              routeToService(Home(), userModel);
+            } else {
+              normailDialog(context, "Wrong!! Password. Please Try again.");
+            }
+          } else {
+            if (password == userModel.password) {
+              routeToService(Home(), userModel);
+            } else {
+              normailDialog(context, "Wrong!! Password. Please Try again.");
+            }
+          }
         }
       }
     } catch (e) {}

@@ -46,15 +46,6 @@ class _EditAccountState extends State<EditAccount> {
     "Female",
   ];
 
-  // List<String> listCounrtry = <String>[
-  //   "Afghanistan",
-  //   "Aland Islands",
-  //   "Albania",
-  //   "Algeria",
-  //   "American Samoa",
-  //   "Andorra",
-  //   "Thailand",
-  // ];
 
   @override
   void initState() {
@@ -148,7 +139,7 @@ class _EditAccountState extends State<EditAccount> {
                           shape: BoxShape.circle,
                         ),
                         child: ClipOval(
-                          child: file == null
+                          child: file == null 
                               ? Image.network(
                                   "${MyConstant().domain}$urlImage",
                                   fit: BoxFit.cover,

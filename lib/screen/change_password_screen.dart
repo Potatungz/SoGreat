@@ -17,7 +17,12 @@ class ChangePasswordScreen extends StatefulWidget {
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final formKey = GlobalKey<FormState>();
-  String id, password, currentPassword, newPassword, confirmNewPassword;
+  String id,
+      password,
+      currentPassword,
+      newPassword,
+      confirmNewPassword,
+      decodePassword;
   UserModel userModel;
 
   bool statusRedEyeCurrentPassword = true;
@@ -51,8 +56,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         password = userModel.password;
       });
     }
-
-    print("Password = $password");
+  
+      Codec<String, String> stringToBase64 = utf8.fuse(base64);
+      decodePassword = stringToBase64.decode(password);
+      print("Decode : $decodePassword");
+   
   }
 
   @override
@@ -101,9 +109,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 if (value.isEmpty) {
                                   return 'Please Enter Current Password';
                                 }
-                                if (password != currentPassword) {
+                                if (decodePassword != currentPassword && password != currentPassword) {
+                                  print("password: $password , decodePassword : $decodePassword , current : $currentPassword");
                                   return "Current Password does not match";
                                 }
+
                                 return null;
                               },
                               obscureText: statusRedEyeCurrentPassword,
@@ -156,11 +166,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   return 'Password must be atleast 8 characters long';
                                 }
                                 if (!RegExp(
-                                        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[~@#$%^&*+=`|{}:;!.,?_\\\"()\[\]\/-\<\>]).{8,}$')
                                     .hasMatch(value)) {
                                   return 'Password should contain letters, numbers & symbols';
                                 }
-                                if(currentPassword == newPassword){
+                                if (currentPassword == newPassword) {
                                   return "New password does match current password";
                                 }
                                 return null;
@@ -225,11 +235,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   return 'Password must be atleast 8 characters long';
                                 }
                                 if (!RegExp(
-                                        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                                        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[~@#$%^&*+=`|{}:;!.,?_\\\"()\[\]\/-\<\>]).{8,}$')
                                     .hasMatch(value)) {
                                   return 'Password should contain letters, numbers & symbols';
                                 }
-                                if(currentPassword == confirmNewPassword){
+                                if (currentPassword == confirmNewPassword) {
                                   return "Confirm password does match current password";
                                 }
                                 if (newPassword != confirmNewPassword) {
@@ -282,28 +292,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                         "Old Password = $currentPassword , New Password = $newPassword , ConfirmPassword = $confirmNewPassword");
                                     editPassword();
                                   }
-                                  // print(
-                                  //     "Old Password = $currentPassword , New Password = $newPassword , ConfirmPassword = $confirmNewPassword");
-                                  // if ((currentPassword?.isEmpty ?? true) ||
-                                  //     (newPassword?.isEmpty ?? true) ||
-                                  //     (confirmNewPassword?.isEmpty ?? true)) {
-                                  //   print("Have Space");
-                                  //   normailDialog(
-                                  //       context, "Have Space ? Please Fill");
-                                  // } else if (currentPassword != password) {
-                                  //   normailDialog(
-                                  //       context, "Current password incorrect");
-                                  // } else if ((currentPassword == newPassword) ||
-                                  //     (currentPassword == confirmNewPassword)) {
-                                  //   normailDialog(context,
-                                  //       "New password you have same old password");
-                                  // } else if (newPassword != confirmNewPassword) {
-                                  //   normailDialog(context,
-                                  //       "Confirm Password does match new password");
-                                  // } else {
-                                  //   print("No Space");
-                                  //   editPassword();
-                                  // }
+                                
                                 },
                                 child: Text(
                                   "Save",
@@ -325,12 +314,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Future<Null> editPassword() async {
-    password = newPassword;
-    var encodePassword = Uri.encodeComponent(password);
+    decodePassword = newPassword;
+    // var encodePassword = Uri.encodeComponent(password);
+    Codec<String, String> stringToBase64 = utf8.fuse(base64);
+    String encodeChangePassword = stringToBase64.encode(decodePassword);
+    print("Encode = $encodeChangePassword");
     String url =
-        "${MyConstant().domain}/SoGreat/editPasswordWhereId.php?isAdd=true&id=$id&Password=$encodePassword";
+        "${MyConstant().domain}/SoGreat/editPasswordWhereId.php?isAdd=true&id=$id&Password=$encodeChangePassword";
     print("URL = $url");
-    
+
     Response response = await Dio().get(url);
 
     if (response.toString() == "true") {

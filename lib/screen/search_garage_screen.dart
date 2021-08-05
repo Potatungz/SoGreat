@@ -146,7 +146,9 @@ class _SearchGarageScreenState extends State<SearchGarageScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(6.0)),
                     image: DecorationImage(
-                      image: NetworkImage(
+                      image: user.urlImage == ""  ? AssetImage(
+                                "images/avatar.png",
+                              ): NetworkImage(
                           "${MyConstant().domain}${user.urlImage}"),
                       fit: BoxFit.cover,
                     ),
